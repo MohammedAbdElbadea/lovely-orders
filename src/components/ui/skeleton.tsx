@@ -1,0 +1,19 @@
+"use client";
+
+import { type HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "animate-pulse rounded-luxury bg-surface-elevated",
+        className
+      )}
+      aria-hidden="true"
+      {...props}
+    />
+  );
+}
+
+export { Skeleton };
