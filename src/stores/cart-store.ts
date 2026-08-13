@@ -7,6 +7,9 @@ import { MAX_CART_QUANTITY } from "@/lib/constants";
 
 interface CartState {
   items: CartItem[];
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
   removeItem: (productId: string, variantId?: string) => void;
   updateQuantity: (
@@ -17,6 +20,8 @@ interface CartState {
   clearCart: () => void;
   getItemCount: () => number;
   getSubtotal: () => number;
+  totalItems: () => number;
+  subtotal: () => number;
 }
 
 function itemKey(productId: string, variantId?: string): string {
@@ -27,6 +32,9 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      isOpen: false,
+      openCart: () => set({ isOpen: true }),
+      closeCart: () => set({ isOpen: false }),
 
       addItem: (item) => {
         const quantity = Math.min(item.quantity ?? 1, item.maxQuantity, MAX_CART_QUANTITY);
@@ -92,6 +100,9 @@ export const useCartStore = create<CartState>()(
           (total, item) => total + item.price * item.quantity,
           0
         ),
+
+      totalItems: () => get().getItemCount(),
+      subtotal: () => get().getSubtotal(),
     }),
     {
       name: "lovely-orders-cart",

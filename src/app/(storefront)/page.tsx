@@ -5,6 +5,7 @@ import { BrandCarousel } from "@/components/storefront/BrandCarousel";
 import { ReviewHighlight } from "@/components/storefront/ReviewHighlight";
 import { Button } from "@/components/ui/button";
 import { getHomepageSections } from "@/services/homepage.service";
+import { TranslatedText } from "@/components/shared/TranslatedText";
 import {
   getFeaturedProducts,
   getNewArrivals,
@@ -49,21 +50,37 @@ export default async function HomePage() {
 
       <BrandCarousel brands={brands} />
 
-      {featuredProducts.length > 0 && (
+      {featuredProducts.length > 0 ? (
         <section className="py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
               <h2 className="font-display text-2xl tracking-wide sm:text-3xl">
-                Featured Products
+                <TranslatedText path="storefront.featuredProducts" fallback="Featured Products" />
               </h2>
               <Link
                 href="/products?featured=true"
-                className="text-xs uppercase tracking-[0.15em] text-gold hover:text-gold-hover"
+                className="text-xs uppercase tracking-[0.15em] text-gold hover:text-gold-hover font-semibold"
               >
-                View All
+                <TranslatedText path="common.viewAll" fallback="View All" />
               </Link>
             </div>
             <ProductGrid products={featuredProducts} />
+          </div>
+        </section>
+      ) : (
+        <section className="py-16 text-center border-t border-luxury-border/30 bg-surface-elevated/40">
+          <div className="mx-auto max-w-xl px-4">
+            <h2 className="font-display text-2xl font-semibold tracking-wide text-luxury-white">
+              تشكيلة فاخرة متجددة
+            </h2>
+            <p className="mt-3 text-sm text-luxury-muted leading-relaxed">
+              سيتم تفعيل وعرض المنتجات فور إضافتها مباشرة عبر لوحة التحكم والإدارة.
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <Link href="/admin">
+                <Button variant="secondary" size="sm">الدخول للوحة التحكم</Button>
+              </Link>
+            </div>
           </div>
         </section>
       )}
@@ -73,13 +90,13 @@ export default async function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
               <h2 className="font-display text-2xl tracking-wide sm:text-3xl">
-                New Arrivals
+                <TranslatedText path="storefront.newArrivals" fallback="New Arrivals" />
               </h2>
               <Link
                 href="/products?new=true"
                 className="text-xs uppercase tracking-[0.15em] text-gold hover:text-gold-hover"
               >
-                View All
+                <TranslatedText path="common.viewAll" fallback="View All" />
               </Link>
             </div>
             <ProductGrid products={newArrivals} />
@@ -92,13 +109,13 @@ export default async function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
               <h2 className="font-display text-2xl tracking-wide sm:text-3xl">
-                Curated Collections
+                <TranslatedText path="common.collections" fallback="Curated Collections" />
               </h2>
               <Link
                 href="/collections"
                 className="text-xs uppercase tracking-[0.15em] text-gold hover:text-gold-hover"
               >
-                View All
+                <TranslatedText path="common.viewAll" fallback="View All" />
               </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -131,13 +148,13 @@ export default async function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
               <h2 className="font-display text-2xl tracking-wide sm:text-3xl">
-                Best Sellers
+                <TranslatedText path="storefront.bestSellers" fallback="Best Sellers" />
               </h2>
               <Link
                 href="/products?bestseller=true"
                 className="text-xs uppercase tracking-[0.15em] text-gold hover:text-gold-hover"
               >
-                View All
+                <TranslatedText path="common.viewAll" fallback="View All" />
               </Link>
             </div>
             <ProductGrid products={bestSellers} />
@@ -150,13 +167,15 @@ export default async function HomePage() {
       <section className="border-t border-luxury-border/20 bg-premium-black py-16">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
           <h2 className="font-display text-2xl tracking-wide sm:text-3xl">
-            Exclusive Deals
+            <TranslatedText path="common.deals" fallback="Exclusive Deals" />
           </h2>
           <p className="mt-4 text-luxury-muted">
             Discover limited-time offers on premium beauty essentials.
           </p>
           <Link href="/deals" className="mt-8 inline-block">
-            <Button size="lg">Shop Deals</Button>
+            <Button size="lg">
+              <TranslatedText path="common.deals" fallback="Shop Deals" />
+            </Button>
           </Link>
         </div>
       </section>

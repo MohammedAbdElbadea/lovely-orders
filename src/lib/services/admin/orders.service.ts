@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/constants";
+import { DEMO_ORDERS } from "@/lib/demo-data";
 import type { Order, OrderStatus, PaginatedResult } from "@/types/domain.types";
 
 export interface OrderFilters {
@@ -12,9 +14,31 @@ export interface OrderFilters {
 export async function getOrders(
   filters: OrderFilters = {}
 ): Promise<PaginatedResult<Order>> {
-  const supabase = await createClient();
   const limit = filters.limit ?? 20;
   const offset = filters.offset ?? 0;
+
+  if (!isSupabaseConfigured()) {
+    let orders = [...DEMO_ORDERS];
+    if (filters.status) orders = orders.filter((o) => o.status === filters.status);
+    if (filters.paymentStatus) orders = orders.filter((o) => o.payment_status === filters.paymentStatus);
+    if (filters.search) {
+      const q = filters.search.toLowerCase();
+      orders = orders.filter(
+        (o) =>
+          o.order_number.toLowerCase().includes(q) ||
+          o.guest_name.toLowerCase().includes(q) ||
+          o.guest_phone.includes(q)
+      );
+    }
+    return {
+      data: orders.slice(offset, offset + limit),
+      total: orders.length,
+      limit,
+      offset,
+    };
+  }
+
+  const supabase = await createClient();
 
   let query = supabase.from("orders").select("*", { count: "exact" });
 
@@ -42,6 +66,16 @@ export async function getOrders(
 }
 
 export async function getOrderById(id: string) {
+  if (!isSupabaseConfigured()) {
+    const order = DEMO_ORDERS.find((o) => o.id === id);
+    if (!order) return null;
+    return {
+      ...order,
+      items: order.items ?? [],
+      statusHistory: [],
+    };
+  }
+
   const supabase = await createClient();
   const { data: order } = await supabase
     .from("orders")

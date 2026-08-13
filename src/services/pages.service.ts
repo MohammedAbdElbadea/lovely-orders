@@ -49,6 +49,7 @@ export const CMS_SLUGS = [
   "privacy",
   "refund",
   "shipping",
+  "shipping-policy",
 ] as const;
 
 export type CmsSlug = (typeof CMS_SLUGS)[number];

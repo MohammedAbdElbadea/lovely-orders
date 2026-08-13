@@ -1,5 +1,4 @@
-import { DataTable, type Column } from "@/components/admin/DataTable";
-import { Badge } from "@/components/ui/badge";
+import { AdminUsersList } from "@/components/admin/AdminUsersList";
 import { getAdminUsers } from "@/lib/services/admin/misc.service";
 
 interface AdminUserRow {
@@ -14,48 +13,13 @@ interface AdminUserRow {
 export default async function AdminUsersPage() {
   const users = await getAdminUsers();
 
-  const columns: Column<AdminUserRow>[] = [
-    { key: "full_name", header: "Name" },
-    { key: "email", header: "Email" },
-    {
-      key: "role",
-      header: "Role",
-      render: (row) => (
-        <Badge variant="outline" className="capitalize">
-          {row.role?.name?.replace("_", " ") ?? "—"}
-        </Badge>
-      ),
-    },
-    {
-      key: "is_active",
-      header: "Status",
-      render: (row) => (
-        <Badge variant={row.is_active ? "inStock" : "outOfStock"}>
-          {row.is_active ? "Active" : "Inactive"}
-        </Badge>
-      ),
-    },
-    {
-      key: "last_login_at",
-      header: "Last Login",
-      render: (row) =>
-        row.last_login_at
-          ? new Date(row.last_login_at).toLocaleString()
-          : "Never",
-    },
-  ];
-
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl tracking-wide text-luxury-white">Admin Users</h1>
         <p className="text-sm text-luxury-muted">Manage admin accounts and roles</p>
       </div>
-      <DataTable
-        data={users as AdminUserRow[]}
-        columns={columns}
-        searchKeys={["full_name", "email"]}
-      />
+      <AdminUsersList users={users as AdminUserRow[]} />
     </div>
   );
 }

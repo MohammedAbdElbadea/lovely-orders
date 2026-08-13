@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import type { AdminUser } from "@/types/domain.types";
+import type { AdminUser, Role } from "@/types/domain.types";
+import type { AdminUsersRow } from "@/types/database.types";
 
 export const PERMISSIONS = {
   PRODUCTS_VIEW: "products.view",
@@ -69,6 +70,14 @@ export const ROLE_PERMISSIONS: Record<string, PermissionName[]> = {
   ],
 };
 
+type AdminWithRole = AdminUsersRow & {
+  role: Role | null;
+};
+
+type RolePermissionWithName = {
+  permission: { name: string } | null;
+};
+
 export async function getAdminUser(
   authUserId: string
 ): Promise<AdminUser | null> {
@@ -90,22 +99,30 @@ export async function getAdminUser(
     return null;
   }
 
+  const admin = data as unknown as AdminWithRole;
+
   const { data: rolePerms } = await supabase
     .from("role_permissions")
     .select("permission:permissions(name)")
-    .eq("role_id", data.role_id);
+    .eq("role_id", admin.role_id);
 
   const permissions =
-    rolePerms
-      ?.map((rp) => {
-        const perm = rp.permission as { name: string } | null;
-        return perm?.name;
-      })
-      .filter((name): name is string => Boolean(name)) ?? [];
+    (rolePerms as unknown as RolePermissionWithName[])
+      ?.map((rp) => rp.permission?.name)
+      .filter((name): name is string => typeof name === "string") ?? [];
 
   return {
-    ...data,
-    role: data.role as AdminUser["role"],
+    id: admin.id,
+    auth_user_id: admin.auth_user_id,
+    full_name: admin.full_name,
+    email: admin.email,
+    role_id: admin.role_id,
+    is_active: admin.is_active,
+    last_login_at: admin.last_login_at,
+    two_factor_enabled: admin.two_factor_enabled,
+    created_at: admin.created_at,
+    updated_at: admin.updated_at,
+    role: admin.role ?? undefined,
     permissions,
   };
 }

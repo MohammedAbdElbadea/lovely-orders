@@ -104,10 +104,28 @@ export function OrderDetailClient({ order }: OrderDetailClientProps) {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot>
+                <tfoot className="border-t border-luxury-border/30">
+                  {order.discount_amount > 0 && (
+                    <>
+                      <tr>
+                        <td colSpan={3} className="px-4 py-2 text-right text-sm text-luxury-muted">المجموع الفرعي (Subtotal)</td>
+                        <td className="px-4 py-2 text-right text-sm font-medium text-luxury-white">
+                          {formatPrice(Number(order.subtotal ?? order.total_amount), "EGP", "en-EG")}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colSpan={3} className="px-4 py-2 text-right text-sm font-semibold text-emerald-600">
+                          خصم البروموكود (Discount) 🏷️
+                        </td>
+                        <td className="px-4 py-2 text-right text-sm font-semibold text-emerald-600">
+                          -{formatPrice(Number(order.discount_amount), "EGP", "en-EG")}
+                        </td>
+                      </tr>
+                    </>
+                  )}
                   <tr>
-                    <td colSpan={3} className="px-4 py-2 text-right text-luxury-muted">Total</td>
-                    <td className="px-4 py-2 text-right font-medium text-gold">
+                    <td colSpan={3} className="px-4 py-2 text-right font-bold text-luxury-white">الإجمالي النهائي (Total)</td>
+                    <td className="px-4 py-2 text-right font-bold text-lg text-gold">
                       {formatPrice(Number(order.total_amount), "EGP", "en-EG")}
                     </td>
                   </tr>

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { getCustomerById } from "@/lib/services/admin/catalog.service";
 import { formatPrice } from "@/lib/utils";
+import type { OrdersRow } from "@/types/database.types";
 
 interface CustomerDetailPageProps {
   params: Promise<{ id: string }>;
@@ -58,7 +59,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
               <p className="text-sm text-luxury-muted">No orders yet</p>
             ) : (
               <ul className="divide-y divide-luxury-border/10">
-                {customer.orders.map((order) => (
+                {customer.orders.map((order: OrdersRow) => (
                   <li key={order.id} className="flex items-center justify-between py-3">
                     <Link href={`/admin/orders/${order.id}`} className="text-gold hover:underline">
                       {order.order_number}
@@ -84,7 +85,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
             <p className="text-sm text-luxury-muted">No notes yet</p>
           ) : (
             <ul className="space-y-3">
-              {customer.notes.map((note: { id: string; note: string; created_at: string; admin?: { full_name: string } }) => (
+              {customer.notes.map((note: { id: string; note: string; created_at: string; admin?: { full_name: string } | null }) => (
                 <li key={note.id} className="rounded-luxury border border-luxury-border/20 p-3">
                   <p className="text-sm">{note.note}</p>
                   <p className="mt-1 text-xs text-luxury-muted">

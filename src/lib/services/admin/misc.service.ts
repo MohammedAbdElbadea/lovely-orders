@@ -1,11 +1,34 @@
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/constants";
+import {
+  DEMO_PRODUCTS,
+  DEMO_REVIEWS,
+  DEMO_BRANDS,
+  DEMO_DISCOUNTS,
+  DEMO_COUPONS,
+  DEMO_BANNERS,
+  DEMO_HOMEPAGE_SECTIONS,
+  DEMO_PAGES,
+} from "@/lib/demo-data";
 import type { Review, Product, InventoryLog } from "@/types/domain.types";
+import type {
+  StoreSettingsRow,
+  ProductsRow,
+  PagesRow,
+  BrandsRow,
+} from "@/types/database.types";
 
 export async function getReviews(
   status?: string,
   limit = 20,
   offset = 0
 ) {
+  if (!isSupabaseConfigured()) {
+    let reviews = [...DEMO_REVIEWS];
+    if (status) reviews = reviews.filter((r) => r.status === status);
+    return { data: reviews.slice(offset, offset + limit), total: reviews.length, limit, offset };
+  }
+
   const supabase = await createClient();
   let query = supabase
     .from("reviews")
@@ -25,11 +48,21 @@ export async function getInventoryProducts(
   limit = 20,
   offset = 0
 ) {
+  if (!isSupabaseConfigured()) {
+    let prods = [...DEMO_PRODUCTS];
+    if (filter === "low") {
+      prods = prods.filter((p) => p.stock_quantity <= 5);
+    } else if (filter === "out") {
+      prods = prods.filter((p) => p.stock_quantity === 0);
+    }
+    return { data: prods.slice(offset, offset + limit), total: prods.length, limit, offset };
+  }
+
   const supabase = await createClient();
   let query = supabase.from("products").select("*", { count: "exact" });
 
   if (filter === "low") {
-    query = query.lte("stock_quantity", 5).gt("stock_quantity", 0);
+    query = query.lte("stock_quantity", 5);
   } else if (filter === "out") {
     query = query.eq("stock_quantity", 0);
   }
@@ -42,6 +75,8 @@ export async function getInventoryProducts(
 }
 
 export async function getInventoryLogs(limit = 20): Promise<InventoryLog[]> {
+  if (!isSupabaseConfigured()) return [];
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("inventory_logs")
@@ -52,27 +87,51 @@ export async function getInventoryLogs(limit = 20): Promise<InventoryLog[]> {
 }
 
 export async function getNotifications(adminUserId: string) {
+  if (!isSupabaseConfigured()) return [];
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("notifications")
     .select("*")
     .eq("admin_user_id", adminUserId)
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(10);
   return data ?? [];
 }
 
 export async function getStoreSettings() {
+  if (!isSupabaseConfigured()) {
+    return {
+      store_name: "LOVELY ORDERS",
+      store_phone: "01067258266",
+      store_email: "hello@lovelyorders.com",
+      currency: "EGP",
+    };
+  }
+
   const supabase = await createClient();
   const { data } = await supabase.from("store_settings").select("*");
   const settings: Record<string, unknown> = {};
-  for (const row of data ?? []) {
+  for (const row of (data ?? []) as StoreSettingsRow[]) {
     settings[row.key] = row.value;
   }
   return settings;
 }
 
 export async function getAdminUsers() {
+  if (!isSupabaseConfigured()) {
+    return [
+      {
+        id: "demo-admin-id",
+        full_name: "Demo Admin",
+        email: "admin@lovelyorders.com",
+        role: { name: "super_admin" },
+        is_active: true,
+        created_at: new Date().toISOString(),
+      },
+    ];
+  }
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("admin_users")
@@ -82,6 +141,8 @@ export async function getAdminUsers() {
 }
 
 export async function getAuditLogs(limit = 50) {
+  if (!isSupabaseConfigured()) return [];
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("audit_logs")
@@ -92,6 +153,8 @@ export async function getAuditLogs(limit = 50) {
 }
 
 export async function getLoginHistory(limit = 50) {
+  if (!isSupabaseConfigured()) return [];
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("login_history")
@@ -102,6 +165,8 @@ export async function getLoginHistory(limit = 50) {
 }
 
 export async function getHomepageSections() {
+  if (!isSupabaseConfigured()) return DEMO_HOMEPAGE_SECTIONS;
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("homepage_sections")
@@ -111,6 +176,8 @@ export async function getHomepageSections() {
 }
 
 export async function getPages() {
+  if (!isSupabaseConfigured()) return DEMO_PAGES;
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("pages")
@@ -120,12 +187,18 @@ export async function getPages() {
 }
 
 export async function getPageById(id: string) {
+  if (!isSupabaseConfigured()) {
+    return DEMO_PAGES.find((p) => p.id === id) ?? null;
+  }
+
   const supabase = await createClient();
   const { data } = await supabase.from("pages").select("*").eq("id", id).single();
   return data;
 }
 
 export async function getDiscounts() {
+  if (!isSupabaseConfigured()) return DEMO_DISCOUNTS;
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("discounts")
@@ -135,15 +208,19 @@ export async function getDiscounts() {
 }
 
 export async function getCoupons() {
+  if (!isSupabaseConfigured()) return DEMO_COUPONS;
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("coupons")
-    .select("*, discount:discounts(name)")
+    .select("*, discount:discounts(*)")
     .order("created_at", { ascending: false });
   return data ?? [];
 }
 
 export async function getBanners() {
+  if (!isSupabaseConfigured()) return DEMO_BANNERS;
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("promotional_banners")
@@ -152,7 +229,23 @@ export async function getBanners() {
   return data ?? [];
 }
 
+type SeoProductRow = Pick<ProductsRow, "id" | "meta_title" | "meta_description" | "status">;
+type SeoPageRow = Pick<PagesRow, "id" | "meta_title" | "meta_description" | "status">;
+type SeoBrandRow = Pick<BrandsRow, "id" | "meta_title" | "meta_description" | "is_active">;
+
 export async function getSeoHealth() {
+  if (!isSupabaseConfigured()) {
+    return {
+      totalProducts: DEMO_PRODUCTS.length,
+      totalPages: DEMO_PAGES.length,
+      totalBrands: DEMO_BRANDS.length,
+      missingMetaProducts: 0,
+      missingMetaPages: 0,
+      missingMetaBrands: 0,
+      score: 100,
+    };
+  }
+
   const supabase = await createClient();
   const [products, pages, brands] = await Promise.all([
     supabase.from("products").select("id, meta_title, meta_description, status"),
@@ -160,34 +253,33 @@ export async function getSeoHealth() {
     supabase.from("brands").select("id, meta_title, meta_description, is_active"),
   ]);
 
-  const productRows = products.data ?? [];
-  const pageRows = pages.data ?? [];
-  const brandRows = brands.data ?? [];
+  const prodList = (products.data ?? []) as SeoProductRow[];
+  const pageList = (pages.data ?? []) as SeoPageRow[];
+  const brandList = (brands.data ?? []) as SeoBrandRow[];
 
-  const missingMetaProducts = productRows.filter(
+  const missingMetaProducts = prodList.filter(
     (p) => !p.meta_title || !p.meta_description
   ).length;
-  const missingMetaPages = pageRows.filter(
+  const missingMetaPages = pageList.filter(
     (p) => !p.meta_title || !p.meta_description
   ).length;
-  const missingMetaBrands = brandRows.filter(
+  const missingMetaBrands = brandList.filter(
     (b) => !b.meta_title || !b.meta_description
   ).length;
 
-  const total = productRows.length + pageRows.length + brandRows.length;
-  const covered =
-    total -
-    missingMetaProducts -
-    missingMetaPages -
-    missingMetaBrands;
+  const totalItems = prodList.length + pageList.length + brandList.length;
+  const totalMissing =
+    missingMetaProducts + missingMetaPages + missingMetaBrands;
+  const score =
+    totalItems > 0 ? Math.round(((totalItems - totalMissing) / totalItems) * 100) : 100;
 
   return {
-    totalProducts: productRows.length,
-    totalPages: pageRows.length,
-    totalBrands: brandRows.length,
+    totalProducts: prodList.length,
+    totalPages: pageList.length,
+    totalBrands: brandList.length,
     missingMetaProducts,
     missingMetaPages,
     missingMetaBrands,
-    score: Math.round((covered / Math.max(total, 1)) * 100),
+    score,
   };
 }

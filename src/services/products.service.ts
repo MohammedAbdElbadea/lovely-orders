@@ -72,10 +72,10 @@ function sortProducts(products: Product[], sort: ProductSort): Product[] {
   }
 }
 
-function applySupabaseSort(
-  query: ReturnType<Awaited<ReturnType<typeof createClient>>["from"]>,
+function applySupabaseSort<T extends { order: (column: string, options?: { ascending?: boolean }) => T }>(
+  query: T,
   sort: ProductSort
-) {
+): T {
   switch (sort) {
     case "price_asc":
       return query.order("price", { ascending: true });
@@ -111,7 +111,7 @@ export async function getProducts(
   const supabase = await createClient();
   let query = supabase
     .from("products")
-    .select("*, brand:brands(*), category:categories(*), images:product_images(*)", {
+    .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)", {
       count: "exact",
     });
 
@@ -158,7 +158,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
-    .select("*, brand:brands(*), category:categories(*), images:product_images(*), variants:product_variants(*)")
+    .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*), variants:product_variants(*)")
     .eq("slug", slug)
     .single();
 
@@ -208,7 +208,7 @@ export async function getRelatedProducts(
   const supabase = await createClient();
   let query = supabase
     .from("products")
-    .select("*, brand:brands(*), category:categories(*), images:product_images(*)")
+    .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)")
     .eq("status", "published")
     .neq("id", productId)
     .limit(limit);
@@ -266,7 +266,7 @@ export async function getProductsByCollection(
 
   const { data, count, error } = await supabase
     .from("products")
-    .select("*, brand:brands(*), category:categories(*), images:product_images(*)", {
+    .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)", {
       count: "exact",
     })
     .eq("status", "published")
@@ -336,7 +336,7 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
       ...input,
       published_at: input.status === "published" ? new Date().toISOString() : null,
     })
-    .select("*, brand:brands(*), category:categories(*), images:product_images(*)")
+    .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)")
     .single();
 
   if (error) throw new Error(error.message);
@@ -363,7 +363,7 @@ export async function updateProduct(
     .from("products")
     .update(input)
     .eq("id", id)
-    .select("*, brand:brands(*), category:categories(*), images:product_images(*)")
+    .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)")
     .single();
 
   if (error) throw new Error(error.message);

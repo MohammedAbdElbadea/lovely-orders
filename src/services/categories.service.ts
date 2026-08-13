@@ -131,6 +131,11 @@ export async function deleteCategory(id: string): Promise<void> {
   }
 
   const supabase = await createClient();
+  // Unlink products and child categories first
+  await supabase.from("products").update({ category_id: null }).eq("category_id", id);
+  await supabase.from("products").update({ subcategory_id: null }).eq("subcategory_id", id);
+  await supabase.from("categories").update({ parent_id: null }).eq("parent_id", id);
+
   const { error } = await supabase.from("categories").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }

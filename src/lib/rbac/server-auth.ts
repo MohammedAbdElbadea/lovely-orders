@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { AdminUser } from "@/types/domain.types";
+import type { AdminUser, Role } from "@/types/domain.types";
+import type { AdminUsersRow } from "@/types/database.types";
 import {
   hasPermission,
   PERMISSIONS,
@@ -37,6 +38,16 @@ const DEMO_ADMIN: AdminUser = {
 
 const DEMO_PERMISSIONS = Object.values(PERMISSIONS);
 
+// Type for the join result from admin_users with roles
+type AdminWithRole = AdminUsersRow & {
+  role: Role | null;
+};
+
+// Type for role_permissions with nested permission
+type RolePermissionWithName = {
+  permission: { name: string } | null;
+};
+
 export async function getAdminSession(): Promise<AdminSession | null> {
   if (!isSupabaseConfigured()) {
     return {
@@ -54,33 +65,47 @@ export async function getAdminSession(): Promise<AdminSession | null> {
 
   if (!user) return null;
 
-  const { data: admin } = await supabase
+  const { data: adminRow } = await supabase
     .from("admin_users")
     .select("*, role:roles(id, name, description, is_system, created_at)")
     .eq("auth_user_id", user.id)
     .eq("is_active", true)
     .single();
 
-  if (!admin) return null;
+  if (!adminRow) return null;
+
+  // Cast the joined result (Supabase join inference limitation)
+  const admin = adminRow as unknown as AdminWithRole;
 
   const { data: rolePermissions } = await supabase
     .from("role_permissions")
     .select("permission:permissions(name)")
     .eq("role_id", admin.role_id);
 
-  const permissions =
-    rolePermissions
-      ?.map((rp) => {
-        const perm = rp.permission as { name: string } | { name: string }[] | null;
-        if (Array.isArray(perm)) return perm[0]?.name;
-        return perm?.name;
-      })
-      .filter(Boolean) as string[] ?? [];
+  const permissions: string[] =
+    (rolePermissions as unknown as RolePermissionWithName[])
+      ?.map((rp) => rp.permission?.name)
+      .filter((name): name is string => typeof name === "string") ?? [];
+
+  const adminUser: AdminUser = {
+    id: admin.id,
+    auth_user_id: admin.auth_user_id,
+    full_name: admin.full_name,
+    email: admin.email,
+    role_id: admin.role_id,
+    is_active: admin.is_active,
+    last_login_at: admin.last_login_at,
+    two_factor_enabled: admin.two_factor_enabled,
+    created_at: admin.created_at,
+    updated_at: admin.updated_at,
+    role: admin.role ?? undefined,
+    permissions,
+  };
 
   return {
     userId: user.id,
     email: user.email ?? admin.email,
-    admin: admin as AdminUser,
+    admin: adminUser,
     permissions,
   };
 }

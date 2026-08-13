@@ -54,7 +54,7 @@ export async function updateHomepageSection(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("homepage_sections")
-    .update(updates)
+    .update(updates as import("@/types/database.types").HomepageSectionsUpdate)
     .eq("id", id)
     .select()
     .single();

@@ -1,6 +1,8 @@
 import { Header } from "@/components/storefront/Header";
 import { Footer } from "@/components/storefront/Footer";
 import { CartDrawer } from "@/components/storefront/CartDrawer";
+import { WhatsAppFloat } from "@/components/storefront/WhatsAppFloat";
+import { AutoRefreshOnFocus } from "@/components/shared/AutoRefreshOnFocus";
 
 export default function StorefrontLayout({
   children,
@@ -9,10 +11,12 @@ export default function StorefrontLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
+      <AutoRefreshOnFocus />
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
       <CartDrawer />
+      <WhatsAppFloat />
     </div>
   );
 }

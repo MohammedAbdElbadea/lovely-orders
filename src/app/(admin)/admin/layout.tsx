@@ -2,6 +2,7 @@ import { requireAdminSession } from "@/lib/rbac/server-auth";
 import { getNotifications } from "@/lib/services/admin/misc.service";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AutoRefreshOnFocus } from "@/components/shared/AutoRefreshOnFocus";
 
 export default async function AdminLayout({
   children,
@@ -15,6 +16,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-deep-black">
+      <AutoRefreshOnFocus />
       <AdminSidebar permissions={session.permissions} />
       <div className="pl-64">
         <AdminHeader

@@ -19,6 +19,8 @@ interface WishlistState {
   toggleItem: (item: Omit<WishlistItem, "addedAt">) => void;
   isInWishlist: (productId: string) => boolean;
   clearWishlist: () => void;
+  toggle: (item: Omit<WishlistItem, "addedAt">) => void;
+  has: (productId: string) => boolean;
 }
 
 export const useWishlistStore = create<WishlistState>()(
@@ -58,6 +60,9 @@ export const useWishlistStore = create<WishlistState>()(
         get().items.some((i) => i.productId === productId),
 
       clearWishlist: () => set({ items: [] }),
+
+      toggle: (item) => get().toggleItem(item),
+      has: (productId) => get().isInWishlist(productId),
     }),
     {
       name: "lovely-orders-wishlist",

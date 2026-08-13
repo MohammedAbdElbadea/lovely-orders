@@ -3,12 +3,12 @@ import { Suspense } from "react";
 import { ProductGrid } from "@/components/storefront/ProductGrid";
 import { SearchBar } from "@/components/storefront/SearchBar";
 import { FilterPanel } from "@/components/storefront/FilterPanel";
-import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { getProducts, getPriceRange, type ProductSort } from "@/services/products.service";
 import { getCategories } from "@/services/categories.service";
 import { getBrands } from "@/services/brands.service";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
+import { SortSelect } from "@/components/storefront/SortSelect";
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -25,27 +25,6 @@ interface ProductsPageProps {
     bestseller?: string;
     sale?: string;
   }>;
-}
-
-function SortSelect({ defaultValue }: { defaultValue: string }) {
-  return (
-    <form action="/products" method="get" className="flex items-center gap-2">
-      <Select
-        name="sort"
-        defaultValue={defaultValue}
-        options={[
-          { value: "newest", label: "Newest" },
-          { value: "price_asc", label: "Price: Low to High" },
-          { value: "price_desc", label: "Price: High to Low" },
-          { value: "rating", label: "Top Rated" },
-          { value: "name", label: "Name A–Z" },
-        ]}
-        className="w-44"
-        aria-label="Sort products"
-        onChange={(e) => e.currentTarget.form?.submit()}
-      />
-    </form>
-  );
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {

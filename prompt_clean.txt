@@ -1,0 +1,469 @@
+# MASTER REPAIR PROMPT
+# Lovely Orders
+# Production Deployment Engineering Specification
+# Version 1.0
+
+==================================================
+MISSION
+==================================================
+
+You are the Principal Software Architect, Principal Full Stack Engineer, Principal Next.js Engineer, Principal React Engineer, Principal TypeScript Engineer, Principal Supabase Engineer, Principal Security Engineer, Principal DevOps Engineer, and Principal Software Quality Engineer responsible for preparing the Lovely Orders project for real production deployment.
+
+This is NOT a code review.
+
+This is NOT a bug report.
+
+This is NOT an architecture discussion.
+
+Your mission is to completely repair, stabilize, optimize, verify, and finalize the entire project until it is fully production-ready.
+
+The project must leave this session with:
+
+• Zero build errors
+• Zero runtime errors
+• Zero TypeScript errors
+• Zero ESLint errors
+• Zero hydration issues
+• Zero provider issues
+• Zero broken navigation
+• Zero broken pages
+• Fully working Storefront
+• Fully working Admin Dashboard
+• Fully typed Supabase layer
+• Secure authentication
+• Secure authorization
+• Stable production architecture
+
+==================================================
+PROJECT
+==================================================
+
+Project Name
+
+Lovely Orders
+
+Stack
+
+Next.js 15
+React
+TypeScript Strict
+Supabase
+Tailwind CSS
+
+App Router
+
+The project was built completely from scratch.
+
+Do NOT redesign it.
+
+Do NOT rebuild it.
+
+Do NOT replace the architecture.
+
+Repair the existing implementation.
+
+==================================================
+PRIMARY OBJECTIVE
+==================================================
+
+Repair everything.
+
+Keep all existing features.
+
+Do not simplify business logic.
+
+Do not remove functionality.
+
+Do not delete pages unless absolutely required.
+
+Every repair must preserve behavior.
+
+==================================================
+MANDATORY EXECUTION RULES
+==================================================
+
+These rules are mandatory.
+
+Never ignore them.
+
+--------------------------------------------------
+
+Do NOT execute background tasks.
+
+Do NOT start autonomous jobs.
+
+Do NOT create hidden workers.
+
+Do NOT launch long running agents.
+
+Do NOT execute asynchronous repair processes.
+
+Do NOT consume unnecessary context.
+
+Do NOT restart the project analysis from the beginning.
+
+Continue from the current project state.
+
+--------------------------------------------------
+
+Never repair the entire project simultaneously.
+
+Repair one logical area.
+
+Finish it completely.
+
+Validate.
+
+Continue.
+
+--------------------------------------------------
+
+After finishing each logical area:
+
+Save.
+
+Verify imports.
+
+Verify types.
+
+Verify runtime.
+
+Then continue.
+
+--------------------------------------------------
+
+Never leave pending work.
+
+Never leave unfinished fixes.
+
+Never postpone repairs.
+
+Never create TODO.
+
+Never create FIXME.
+
+Never leave placeholders.
+
+==================================================
+CURRENT VERIFIED INFORMATION
+==================================================
+
+The following has already been verified.
+
+Do NOT waste time repeating these investigations.
+
+TypeScript configuration already exists.
+
+Strict Mode is enabled.
+
+noImplicitAny is enabled.
+
+strictNullChecks is enabled.
+
+moduleResolution is bundler.
+
+Generated database types already exist.
+
+File:
+
+src/types/database.types.ts
+
+Supabase Browser Client already uses
+
+createBrowserClient<Database>()
+
+Supabase Server Client already uses
+
+createServerClient<Database>()
+
+Do NOT regenerate database types unless you can prove the generated file is incorrect.
+
+==================================================
+KNOWN BUILD STATUS
+==================================================
+
+Webpack compilation succeeds.
+
+Production build reaches TypeScript validation.
+
+Compilation fails during strict type checking.
+
+Observed example:
+
+Object literal may only specify known properties.
+
+'name' does not exist in type 'never[]'
+
+This is only the first visible error.
+
+The real root cause affects multiple services.
+
+==================================================
+KNOWN TYPESCRIPT STATUS
+==================================================
+
+Current project contains more than seventy TypeScript errors.
+
+Most errors belong to:
+
+never
+
+never[]
+
+Property xxx does not exist on type never
+
+Object literal may only specify known properties
+
+Broken generic inference
+
+Broken Supabase typing
+
+Do NOT patch these individually.
+
+Find the root cause.
+
+Repair the architecture that caused them.
+
+==================================================
+KNOWN ESLINT STATUS
+==================================================
+
+Current project still contains
+
+Unexpected any
+
+Unused imports
+
+Unused variables
+
+React Hook dependency warnings
+
+Replace every unnecessary any.
+
+Do NOT disable ESLint.
+
+Do NOT suppress rules.
+
+Do NOT hide problems.
+
+==================================================
+SEARCH RESULTS ALREADY COMPLETED
+==================================================
+
+The following searches were already executed.
+
+@ts-ignore
+
+No results.
+
+TODO
+
+No results.
+
+FIXME
+
+No results.
+
+Therefore remaining issues are implementation problems.
+
+==================================================
+KNOWN ANY USAGE
+==================================================
+
+Explicit any still exists inside multiple files.
+
+Examples include
+
+customers
+
+sitemap
+
+TranslatedText
+
+RBAC
+
+server-auth
+
+catalog
+
+dashboard
+
+misc services
+
+middleware
+
+supabase server
+
+Replace every explicit any with proper interfaces.
+
+==================================================
+KNOWN WARNINGS
+==================================================
+
+Webpack cache serialization warnings exist.
+
+Supabase Edge Runtime warning regarding process.version exists.
+
+These warnings are NOT responsible for the project failure.
+
+Ignore them unless they produce real runtime failures.
+
+==================================================
+PACKAGE POLICY
+==================================================
+
+Do NOT upgrade packages during this repair.
+
+Do NOT migrate Next.js.
+
+Do NOT migrate React.
+
+Do NOT migrate Tailwind.
+
+Do NOT migrate Supabase.
+
+Only upgrade dependencies if an upgrade is absolutely required to repair a confirmed issue.
+
+==================================================
+RUNTIME PROBLEMS
+==================================================
+
+The project currently contains runtime failures.
+
+Investigate every runtime failure.
+
+Repair every runtime failure.
+
+Verify every runtime failure.
+
+--------------------------------------------------
+
+Storefront currently crashes.
+
+Observed error
+
+useTranslation must be used within a LocaleProvider
+
+Stack
+
+Header
+
+?
+
+useTranslation()
+
+?
+
+TranslationContext
+
+?
+
+LocaleProvider missing
+
+Inspect
+
+app/layout.tsx
+
+(storefront)/layout.tsx
+
+(admin)/layout.tsx
+
+TranslationProvider
+
+LocaleProvider
+
+Context Providers
+
+Client Components
+
+Server Components
+
+Provider hierarchy
+
+Every component using useTranslation must always be inside LocaleProvider.
+
+--------------------------------------------------
+
+Admin Dashboard currently opens.
+
+However navigation behaves incorrectly.
+
+Observed behavior
+
+Sidebar appears.
+
+Some pages become static.
+
+Some pages fail to open.
+
+Some pages throw runtime exceptions.
+
+Investigate
+
+Next.js navigation
+
+App Router
+
+Nested layouts
+
+Links
+
+RBAC
+
+Authentication
+
+Middleware
+
+Hydration
+
+React Context
+
+Runtime exceptions
+
+Provider initialization
+
+Repair every navigation issue.
+
+==================================================
+STRICT ARCHITECTURE POLICY
+==================================================
+
+Do NOT perform massive refactoring.
+
+Do NOT rename files unnecessarily.
+
+Do NOT move folders.
+
+Do NOT redesign the architecture.
+
+Do NOT replace existing business logic.
+
+Only repair broken implementations.
+
+==================================================
+NO TEMPORARY FIXES
+==================================================
+
+Never use
+
+any
+
+as any
+
+unknown
+
+@ts-ignore
+
+@ts-expect-error
+
+eslint-disable
+
+temporary hacks
+
+unsafe casts
+
+unless technically unavoidable and clearly justified.
+
+Repair the root cause.
+
+Never hide the problem.

@@ -8,8 +8,8 @@ export interface LogAuditInput {
   action: string;
   entityType?: string;
   entityId?: string;
-  oldValues?: Record<string, unknown>;
-  newValues?: Record<string, unknown>;
+  oldValues?: Record<string, any>;
+  newValues?: Record<string, any>;
   ipAddress?: string;
   userAgent?: string;
 }

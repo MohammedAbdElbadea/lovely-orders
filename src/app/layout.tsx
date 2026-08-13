@@ -17,39 +17,102 @@ const sans = Inter({
   display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-  ),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: STORE_NAME,
+    default: `${STORE_NAME} | متجر العطور والتجميل الفاخر`,
     template: `%s | ${STORE_NAME}`,
   },
-  description: STORE_TAGLINE,
+  description: "اكتشف أفخم العطور ومستحضرات التجميل الأصلية من أشهر الماركات العالمية العالمية مع توصيل سريع لجميع المحافظات.",
+  keywords: [
+    "عطور فخمة",
+    "مستحضرات تجميل",
+    "تجميل وعناية",
+    "ديور",
+    "شانيل",
+    "عطور رجالية",
+    "عطور نسائية",
+    "Lovely Orders",
+    "متجر عطور اونلاين",
+  ],
+  authors: [{ name: STORE_NAME }],
+  creator: STORE_NAME,
+  publisher: STORE_NAME,
+  alternates: {
+    canonical: siteUrl,
+    languages: {
+      "ar-EG": siteUrl,
+    },
+  },
   openGraph: {
     type: "website",
-    locale: "en_EG",
+    locale: "ar_EG",
+    url: siteUrl,
     siteName: STORE_NAME,
+    title: `${STORE_NAME} | عطور ومستحضرات تجميل فاخرة`,
+    description: "أفخم المنتجات والعطور الأصلية والماركات العالمية بأسعار متميزة وتوصيل سريع.",
+    images: [
+      {
+        url: `${siteUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: STORE_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
     title: STORE_NAME,
     description: STORE_TAGLINE,
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
+
+import { LocaleProvider } from "@/lib/i18n";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "OnlineStore",
+    name: STORE_NAME,
+    url: siteUrl,
+    description: STORE_TAGLINE,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/products?search={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
-    <html lang="en" dir="ltr" className="dark">
+    <html lang="ar" dir="rtl" className="dark">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${display.variable} ${sans.variable} min-h-screen bg-deep-black font-sans antialiased`}
       >
-        <ToastProvider>{children}</ToastProvider>
+        <LocaleProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

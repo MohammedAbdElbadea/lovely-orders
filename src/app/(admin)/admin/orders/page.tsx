@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { OrdersList } from "@/components/admin/OrdersList";
 import { getOrders } from "@/lib/services/admin/orders.service";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminOrdersPage() {
   const { data: orders } = await getOrders({ limit: 100 });
 

@@ -120,6 +120,9 @@ export async function deleteBrand(id: string): Promise<void> {
   }
 
   const supabase = await createClient();
+  // Unlink any products assigned to this brand first so foreign key constraint does not fail
+  await supabase.from("products").update({ brand_id: null }).eq("brand_id", id);
+
   const { error } = await supabase.from("brands").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }

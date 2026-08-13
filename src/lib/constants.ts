@@ -7,6 +7,7 @@ export const PAYMENT_NUMBER = "01067258266";
 export const PAYMENT_METHODS = {
   VODAFONE_CASH: "vodafone_cash",
   INSTAPAY: "instapay",
+  COD: "cod",
 } as const;
 
 export const ORDER_STATUSES = {

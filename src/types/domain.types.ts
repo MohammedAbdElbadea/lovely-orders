@@ -8,7 +8,7 @@ export type OrderStatus =
   | "completed"
   | "cancelled";
 export type PaymentStatus = "pending" | "verified" | "failed" | "refunded";
-export type PaymentMethod = "vodafone_cash" | "instapay";
+export type PaymentMethod = "vodafone_cash" | "instapay" | "cod";
 export type ReviewStatus = "pending" | "approved" | "rejected";
 export type DiscountType = "percentage" | "fixed";
 export type DiscountScope =

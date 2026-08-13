@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select } from "@/components/ui/select";
 import { formatPrice } from "@/lib/utils";
 import type { Order, OrderStatus } from "@/types/domain.types";
+import { useRealtimeOrders } from "@/hooks/use-realtime-orders";
 
 const statusOptions = [
   { value: "", label: "All statuses" },
@@ -24,7 +25,9 @@ interface OrdersListProps {
 }
 
 export function OrdersList({ orders }: OrdersListProps) {
+  useRealtimeOrders();
   const searchParams = useSearchParams();
+
   const statusFilter = searchParams.get("status") ?? "";
 
   const filtered = statusFilter

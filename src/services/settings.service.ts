@@ -51,7 +51,7 @@ export async function updateSetting(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("store_settings")
-    .upsert({ key, value, updated_by: updatedBy ?? null })
+    .upsert({ key, value: value as import("@/types/database.types").Json, updated_by: updatedBy ?? null })
     .select()
     .single();
 

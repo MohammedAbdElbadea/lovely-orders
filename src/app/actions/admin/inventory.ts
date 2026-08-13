@@ -7,6 +7,9 @@ import { requirePermission } from "@/lib/rbac/server-auth";
 import { PERMISSIONS } from "@/lib/rbac/permissions";
 import { actionError, actionSuccess, type ActionResult } from "@/lib/actions/types";
 
+import { isSupabaseConfigured } from "@/lib/constants";
+import { DEMO_PRODUCTS } from "@/lib/demo-data";
+
 const adjustStockSchema = z.object({
   productId: z.string().uuid(),
   quantity: z.coerce.number().int(),
@@ -30,6 +33,22 @@ export async function adjustStock(formData: FormData): Promise<ActionResult> {
 
   if (!parsed.success) {
     return actionError(parsed.error.errors[0]?.message ?? "Invalid input");
+  }
+
+  if (!isSupabaseConfigured()) {
+    const product = DEMO_PRODUCTS.find((p) => p.id === parsed.data.productId);
+    if (!product) return actionError("Product not found");
+    const previousQty = product.stock_quantity;
+    const newQty = Math.max(0, previousQty + parsed.data.quantity);
+    product.stock_quantity = newQty;
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/inventory/low-stock");
+    revalidatePath("/admin/inventory/out-of-stock");
+    revalidatePath("/admin/products");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/products");
+    revalidatePath("/");
+    return actionSuccess();
   }
 
   const supabase = await createClient();
@@ -76,5 +95,9 @@ export async function adjustStock(formData: FormData): Promise<ActionResult> {
   revalidatePath("/admin/inventory");
   revalidatePath("/admin/inventory/low-stock");
   revalidatePath("/admin/inventory/out-of-stock");
+  revalidatePath("/admin/products");
+  revalidatePath("/admin/dashboard");
+  revalidatePath("/products");
+  revalidatePath("/");
   return actionSuccess();
 }

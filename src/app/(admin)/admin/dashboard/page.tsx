@@ -10,19 +10,28 @@ import {
 import { StatCard } from "@/components/admin/StatCard";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import {
   getDashboardStats,
   getRecentOrders,
   getLowStockProducts,
+  getMonthlyRevenueTrend,
+  getOrderStatusBreakdown,
 } from "@/lib/services/admin/dashboard.service";
 import { formatPrice } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminDashboardPage() {
-  const [stats, recentOrders, lowStock] = await Promise.all([
-    getDashboardStats(),
-    getRecentOrders(5),
-    getLowStockProducts(5),
-  ]);
+  const [stats, recentOrders, lowStock, revenueTrend, orderBreakdown] =
+    await Promise.all([
+      getDashboardStats(),
+      getRecentOrders(5),
+      getLowStockProducts(5),
+      getMonthlyRevenueTrend(),
+      getOrderStatusBreakdown(),
+    ]);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -58,31 +67,11 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Revenue Chart</CardTitle>
-            <TrendingUp className="h-4 w-4 text-gold" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex h-48 items-center justify-center rounded-luxury border border-dashed border-luxury-border/30 bg-surface-elevated/50">
-              <p className="text-sm text-luxury-muted">Chart placeholder — integrate Recharts</p>
-            </div>
-          </CardContent>
-        </Card>
+      <DashboardCharts
+        revenueTrend={revenueTrend}
+        orderBreakdown={orderBreakdown}
+      />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Orders Chart</CardTitle>
-            <BarChart3 className="h-4 w-4 text-gold" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex h-48 items-center justify-center rounded-luxury border border-dashed border-luxury-border/30 bg-surface-elevated/50">
-              <p className="text-sm text-luxury-muted">Chart placeholder — integrate Recharts</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

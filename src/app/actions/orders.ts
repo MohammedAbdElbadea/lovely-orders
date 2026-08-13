@@ -24,9 +24,12 @@ const orderSchema = z.object({
     .min(10, "Valid phone number is required")
     .regex(/^01[0-9]{9}$/, "Enter a valid Egyptian mobile number"),
   guestAddress: z.string().min(10, "Address is required"),
-  paymentMethod: z.enum(["vodafone_cash", "instapay"]),
+  paymentMethod: z.enum(["vodafone_cash", "instapay", "cod"]),
   paymentReference: z.string().optional(),
   items: z.array(cartItemSchema).min(1, "Cart is empty"),
+  couponCode: z.string().optional(),
+  couponId: z.string().optional(),
+  discountAmount: z.number().optional(),
 });
 
 export interface CreateOrderState {
@@ -48,6 +51,12 @@ export async function createOrderAction(
       items = JSON.parse(itemsRaw) as CartItem[];
     }
 
+    const couponCode = (formData.get("couponCode") as string) || undefined;
+    const couponId = (formData.get("couponId") as string) || undefined;
+    const discountAmount = formData.get("discountAmount")
+      ? Number(formData.get("discountAmount"))
+      : undefined;
+
     const parsed = orderSchema.safeParse({
       guestName: formData.get("guestName"),
       guestPhone: formData.get("guestPhone"),
@@ -55,6 +64,9 @@ export async function createOrderAction(
       paymentMethod: formData.get("paymentMethod"),
       paymentReference: formData.get("paymentReference") || undefined,
       items,
+      couponCode,
+      couponId,
+      discountAmount,
     });
 
     if (!parsed.success) {
@@ -70,7 +82,21 @@ export async function createOrderAction(
       paymentMethod: parsed.data.paymentMethod as PaymentMethod,
       paymentReference: parsed.data.paymentReference,
       items: parsed.data.items as CartItem[],
+      couponCode: parsed.data.couponCode,
+      couponId: parsed.data.couponId,
+      discountAmount: parsed.data.discountAmount,
     });
+
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/admin/orders");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/inventory/low-stock");
+    revalidatePath("/admin/inventory/out-of-stock");
+    revalidatePath("/admin/products");
+    revalidatePath("/admin/marketing/coupons");
+    revalidatePath("/products");
+    revalidatePath("/");
 
     return {
       success: true,
