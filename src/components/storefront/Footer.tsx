@@ -28,10 +28,16 @@ export function Footer() {
           <div>
             <Link
               href="/"
-              className="font-display text-2xl font-bold tracking-[0.2em] text-luxury-white hover:text-gold transition-colors"
+              className="font-display text-2xl font-bold tracking-[0.2em] text-luxury-white hover:text-gold transition-colors flex items-center gap-3"
             >
-              {STORE_NAME}
+              <img
+                src="/logo.jpg"
+                alt="Lovely Products"
+                className="h-11 w-auto object-contain rounded-lg border border-gold/30 shadow-xs"
+              />
+              <span>{STORE_NAME}</span>
             </Link>
+
             <p className="mt-4 text-sm leading-relaxed text-luxury-muted">
               وجهتك الأولى لأحدث مستحضرات التجميل والعطور الفاخرة والأصلية 100%، مع خدمة التوصيل السريع لكافة المحافظات المصرية.
             </p>

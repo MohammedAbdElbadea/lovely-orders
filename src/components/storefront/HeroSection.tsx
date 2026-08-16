@@ -66,18 +66,26 @@ export function HeroSection({
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          {/* Top Sparkling Badge */}
+          {/* Top Sparkling Badge & Brand Logo Banner */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold-tint/80 px-4 py-1.5 backdrop-blur-md shadow-xs mb-6 hover:border-gold/60 transition-colors"
+            className="inline-flex flex-col items-center gap-3 mb-6"
           >
-            <Sparkles className="h-4 w-4 text-gold animate-pulse" />
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-              ✨ التشكيلة الفاخرة والأحدث لعام 2026 ✨
-            </span>
+            <img
+              src="/logo.jpg"
+              alt="Lovely Products - Original Skin Care by Ehdāa"
+              className="h-20 sm:h-28 w-auto object-contain rounded-xl border border-gold/40 shadow-lg bg-white/90 p-1 backdrop-blur-md"
+            />
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold-tint/80 px-4 py-1.5 backdrop-blur-md shadow-xs hover:border-gold/60 transition-colors">
+              <Sparkles className="h-4 w-4 text-gold animate-pulse" />
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-gold">
+                ✨ Original Skin Care by Ehdāa • 100% الأصلي ✨
+              </span>
+            </div>
           </motion.div>
+
 
           {/* Main Title */}
           <motion.h1

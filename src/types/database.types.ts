@@ -1157,7 +1157,12 @@ export type Database = {
         Returns: boolean;
       };
       generate_order_number: { Args: Record<string, never>; Returns: string };
+      decrement_stock: {
+        Args: { p_product_id: string; p_qty: number };
+        Returns: boolean;
+      };
     };
+
     Enums: {
       product_status: ProductStatus;
       order_status: OrderStatus;

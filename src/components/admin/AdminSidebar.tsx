@@ -144,17 +144,22 @@ export function AdminSidebar({ permissions }: AdminSidebarProps) {
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-luxury-border/20 bg-premium-black">
-      <div className="flex h-16 items-center gap-2 border-b border-luxury-border/20 px-6">
-        <Sparkles className="h-5 w-5 text-gold" />
+      <div className="flex h-16 items-center gap-3 border-b border-luxury-border/20 px-4">
+        <img
+          src="/logo.jpg"
+          alt="Lovely Products Logo"
+          className="h-9 w-auto object-contain rounded-md border border-gold/30"
+        />
         <div>
-          <p className="font-display text-sm tracking-widest text-luxury-white">
+          <p className="font-display text-xs tracking-widest text-luxury-white font-bold">
             LOVELY ORDERS
           </p>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-luxury-muted">
-            Admin
+          <p className="text-[9px] uppercase tracking-[0.2em] text-gold font-semibold">
+            Admin Portal
           </p>
         </div>
       </div>
+
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">

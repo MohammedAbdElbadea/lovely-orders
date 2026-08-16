@@ -58,10 +58,16 @@ export function Header() {
 
             <Link
               href="/"
-              className="font-display text-lg tracking-[0.2em] text-luxury-white transition-colors hover:text-gold sm:text-xl font-bold"
+              className="font-display text-lg tracking-[0.15em] text-luxury-white transition-colors hover:text-gold sm:text-xl font-bold flex items-center gap-2.5"
             >
-              {STORE_NAME}
+              <img
+                src="/logo.jpg"
+                alt="Lovely Products"
+                className="h-9 w-auto object-contain rounded-md border border-gold/30 shadow-xs"
+              />
+              <span>{STORE_NAME}</span>
             </Link>
+
 
             <nav className="hidden items-center gap-6 lg:flex" aria-label="Main">
               {navLinks.map((link) => (
