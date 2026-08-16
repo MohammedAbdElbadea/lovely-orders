@@ -6,7 +6,7 @@ import { DataTable, type Column } from "@/components/admin/DataTable";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select } from "@/components/ui/select";
 import { formatPrice } from "@/lib/utils";
-import type { Order, OrderStatus } from "@/types/domain.types";
+import type { Order } from "@/types/domain.types";
 import { useRealtimeOrders } from "@/hooks/use-realtime-orders";
 
 const statusOptions = [

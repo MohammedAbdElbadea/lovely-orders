@@ -45,7 +45,7 @@ export function ImageUploader({
       // const supabase = createClient();
       // await supabase.storage.from(bucket).upload(path, file);
     },
-    [maxFiles, previews.length, onChange, bucket]
+    [maxFiles, previews.length, onChange]
   );
 
   const removeImage = (index: number) => {

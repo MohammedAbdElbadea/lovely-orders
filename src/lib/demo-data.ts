@@ -4,7 +4,6 @@ import type {
   Product,
   ProductImage,
   Order,
-  OrderItem,
   Customer,
   Review,
   HomepageSection,

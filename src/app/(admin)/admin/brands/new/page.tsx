@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import type { BrandsInsert } from "@/types/database.types";
 
 const brandSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -33,12 +34,13 @@ export default function NewBrandPage() {
     setError(null);
     startTransition(async () => {
       const supabase = createClient();
-      const { error: insertError } = await supabase.from("brands").insert({
+      const payload: BrandsInsert = {
         name: data.name,
         slug: data.slug,
         description: data.description || null,
         is_active: data.is_active,
-      });
+      };
+      const { error: insertError } = await supabase.from("brands").insert(payload);
       if (insertError) {
         setError(insertError.message);
         return;

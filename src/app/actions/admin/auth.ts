@@ -1,13 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getAdminSession } from "@/lib/rbac/server-auth";
-import { PERMISSIONS } from "@/lib/rbac/permissions";
 import { ROUTES } from "@/lib/constants";
-import { actionError, actionSuccess, type ActionResult } from "@/lib/actions/types";
+import { actionError, type ActionResult } from "@/lib/actions/types";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
