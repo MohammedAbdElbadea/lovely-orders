@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAdminSession } from "@/lib/rbac/server-auth";
 import { ROUTES } from "@/lib/constants";
 import { actionError, type ActionResult } from "@/lib/actions/types";
@@ -30,36 +31,46 @@ export async function loginAction(
     password: parsed.data.password,
   });
 
+  const adminClient = createAdminClient();
+
   if (error || !data.user) {
-    await supabase.from("login_history").insert({
-      email: parsed.data.email,
-      success: false,
-    });
+    try {
+      await adminClient.from("login_history").insert({
+        email: parsed.data.email,
+        success: false,
+      });
+    } catch {
+      // Ignore logging error on failed login
+    }
     return actionError(error?.message ?? "Login failed");
   }
 
-  const { data: admin } = await supabase
+  const { data: admin } = await adminClient
     .from("admin_users")
     .select("id")
     .eq("auth_user_id", data.user.id)
     .eq("is_active", true)
-    .single();
+    .maybeSingle();
 
   if (!admin) {
     await supabase.auth.signOut();
-    return actionError("You do not have admin access");
+    return actionError("You do not have admin access. Make sure your user is added to admin_users table with is_active = true.");
   }
 
-  await supabase
-    .from("admin_users")
-    .update({ last_login_at: new Date().toISOString() })
-    .eq("id", admin.id);
+  try {
+    await adminClient
+      .from("admin_users")
+      .update({ last_login_at: new Date().toISOString() })
+      .eq("id", admin.id);
 
-  await supabase.from("login_history").insert({
-    admin_user_id: admin.id,
-    email: parsed.data.email,
-    success: true,
-  });
+    await adminClient.from("login_history").insert({
+      admin_user_id: admin.id,
+      email: parsed.data.email,
+      success: true,
+    });
+  } catch (err) {
+    console.warn("Login history recording notice:", err);
+  }
 
   redirect(ROUTES.ADMIN + "/dashboard");
 }

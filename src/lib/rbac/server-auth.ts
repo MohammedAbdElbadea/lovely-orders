@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { AdminUser, Role } from "@/types/domain.types";
 import type { AdminUsersRow } from "@/types/database.types";
 import {
@@ -65,19 +66,20 @@ export async function getAdminSession(): Promise<AdminSession | null> {
 
   if (!user) return null;
 
-  const { data: adminRow } = await supabase
+  const adminClient = createAdminClient();
+  const { data: adminRow } = await adminClient
     .from("admin_users")
     .select("*, role:roles(id, name, description, is_system, created_at)")
     .eq("auth_user_id", user.id)
     .eq("is_active", true)
-    .single();
+    .maybeSingle();
 
   if (!adminRow) return null;
 
   // Cast the joined result (Supabase join inference limitation)
   const admin = adminRow as unknown as AdminWithRole;
 
-  const { data: rolePermissions } = await supabase
+  const { data: rolePermissions } = await adminClient
     .from("role_permissions")
     .select("permission:permissions(name)")
     .eq("role_id", admin.role_id);
