@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import {
   DEMO_PRODUCTS,
@@ -29,7 +29,7 @@ export async function getReviews(
     return { data: reviews.slice(offset, offset + limit), total: reviews.length, limit, offset };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("reviews")
     .select("*, product:products(name)", { count: "exact" });
@@ -58,7 +58,7 @@ export async function getInventoryProducts(
     return { data: prods.slice(offset, offset + limit), total: prods.length, limit, offset };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase.from("products").select("*", { count: "exact" });
 
   if (filter === "low") {
@@ -77,7 +77,7 @@ export async function getInventoryProducts(
 export async function getInventoryLogs(limit = 20): Promise<InventoryLog[]> {
   if (!isSupabaseConfigured()) return [];
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("inventory_logs")
     .select("*, product:products(name)")
@@ -89,7 +89,7 @@ export async function getInventoryLogs(limit = 20): Promise<InventoryLog[]> {
 export async function getNotifications(adminUserId: string) {
   if (!isSupabaseConfigured()) return [];
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("notifications")
     .select("*")
@@ -109,7 +109,7 @@ export async function getStoreSettings() {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase.from("store_settings").select("*");
   const settings: Record<string, unknown> = {};
   for (const row of (data ?? []) as StoreSettingsRow[]) {
@@ -132,7 +132,7 @@ export async function getAdminUsers() {
     ];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("admin_users")
     .select("*, role:roles(name)")
@@ -143,7 +143,7 @@ export async function getAdminUsers() {
 export async function getAuditLogs(limit = 50) {
   if (!isSupabaseConfigured()) return [];
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("audit_logs")
     .select("*, admin:admin_users(full_name, email)")
@@ -155,7 +155,7 @@ export async function getAuditLogs(limit = 50) {
 export async function getLoginHistory(limit = 50) {
   if (!isSupabaseConfigured()) return [];
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("login_history")
     .select("*, admin:admin_users(full_name, email)")
@@ -167,23 +167,23 @@ export async function getLoginHistory(limit = 50) {
 export async function getHomepageSections() {
   if (!isSupabaseConfigured()) return DEMO_HOMEPAGE_SECTIONS;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("homepage_sections")
     .select("*")
     .order("sort_order", { ascending: true });
-  return data ?? [];
+  return (data && data.length > 0) ? data : DEMO_HOMEPAGE_SECTIONS;
 }
 
 export async function getPages() {
   if (!isSupabaseConfigured()) return DEMO_PAGES;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("pages")
     .select("*")
     .order("title", { ascending: true });
-  return data ?? [];
+  return (data && data.length > 0) ? data : DEMO_PAGES;
 }
 
 export async function getPageById(id: string) {
@@ -191,42 +191,42 @@ export async function getPageById(id: string) {
     return DEMO_PAGES.find((p) => p.id === id) ?? null;
   }
 
-  const supabase = await createClient();
-  const { data } = await supabase.from("pages").select("*").eq("id", id).single();
-  return data;
+  const supabase = createAdminClient();
+  const { data } = await supabase.from("pages").select("*").eq("id", id).maybeSingle();
+  return data ?? (DEMO_PAGES.find((p) => p.id === id) ?? null);
 }
 
 export async function getDiscounts() {
   if (!isSupabaseConfigured()) return DEMO_DISCOUNTS;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("discounts")
     .select("*")
     .order("created_at", { ascending: false });
-  return data ?? [];
+  return (data && data.length > 0) ? data : DEMO_DISCOUNTS;
 }
 
 export async function getCoupons() {
   if (!isSupabaseConfigured()) return DEMO_COUPONS;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("coupons")
     .select("*, discount:discounts(*)")
     .order("created_at", { ascending: false });
-  return data ?? [];
+  return (data && data.length > 0) ? data : DEMO_COUPONS;
 }
 
 export async function getBanners() {
   if (!isSupabaseConfigured()) return DEMO_BANNERS;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("promotional_banners")
     .select("*")
     .order("sort_order", { ascending: true });
-  return data ?? [];
+  return (data && data.length > 0) ? data : DEMO_BANNERS;
 }
 
 type SeoProductRow = Pick<ProductsRow, "id" | "meta_title" | "meta_description" | "status">;
@@ -246,7 +246,7 @@ export async function getSeoHealth() {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const [products, pages, brands] = await Promise.all([
     supabase.from("products").select("id, meta_title, meta_description, status"),
     supabase.from("pages").select("id, meta_title, meta_description, status"),

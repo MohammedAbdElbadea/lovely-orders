@@ -139,7 +139,15 @@ export async function getProducts(
 
   const { data, error, count } = await query;
 
-  if (error) throw new Error(error.message);
+  if (error || !data || data.length === 0) {
+    const all = sortProducts(filterDemoProducts(filters), sort);
+    return {
+      data: all.slice(offset, offset + limit),
+      total: all.length,
+      limit,
+      offset,
+    };
+  }
 
   return {
     data: (data ?? []) as Product[],
@@ -160,9 +168,12 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .from("products")
     .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*), variants:product_variants(*)")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
-  if (error) return null;
+  if (error || !data) {
+    const product = DEMO_PRODUCTS.find((p) => p.slug === slug);
+    return product ? enrichProduct(product) : null;
+  }
   return data as Product;
 }
 

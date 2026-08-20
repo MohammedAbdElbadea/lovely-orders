@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_PRODUCTS } from "@/lib/demo-data";
 import type { Product, ProductFilters, PaginatedResult } from "@/types/domain.types";
@@ -28,7 +28,7 @@ export async function getProducts(
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   let query = supabase
     .from("products")
@@ -64,7 +64,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     return DEMO_PRODUCTS.find((p) => p.id === id) ?? null;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("products")
     .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)")
@@ -83,7 +83,7 @@ export async function deleteProducts(ids: string[]): Promise<void> {
     return;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("products").delete().in("id", ids);
   if (error) throw error;
 }

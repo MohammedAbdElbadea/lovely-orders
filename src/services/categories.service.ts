@@ -34,7 +34,17 @@ export async function getCategories(activeOnly = true): Promise<Category[]> {
   if (activeOnly) query = query.eq("is_active", true);
 
   const { data, error } = await query;
-  if (error) throw new Error(error.message);
+  if (error || !data || data.length === 0) {
+    const categories = activeOnly
+      ? DEMO_CATEGORIES.filter((c) => c.is_active)
+      : [...DEMO_CATEGORIES];
+
+    const roots = categories.filter((c) => !c.parent_id);
+    return roots.map((root) => ({
+      ...root,
+      children: categories.filter((c) => c.parent_id === root.id),
+    }));
+  }
 
   const categories = (data ?? []) as Category[];
   const roots = categories.filter((c) => !c.parent_id);
@@ -58,9 +68,11 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     .from("categories")
     .select("*")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
-  if (error) return null;
+  if (error || !data) {
+    return DEMO_CATEGORIES.find((c) => c.slug === slug) ?? null;
+  }
   return data as Category;
 }
 

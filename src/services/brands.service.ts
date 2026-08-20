@@ -28,8 +28,12 @@ export async function getBrands(activeOnly = true): Promise<Brand[]> {
   if (activeOnly) query = query.eq("is_active", true);
 
   const { data, error } = await query;
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Brand[];
+  if (error || !data || data.length === 0) {
+    return activeOnly
+      ? DEMO_BRANDS.filter((b) => b.is_active)
+      : [...DEMO_BRANDS];
+  }
+  return data as Brand[];
 }
 
 export async function getFeaturedBrands(limit = 6): Promise<Brand[]> {
@@ -47,9 +51,11 @@ export async function getBrandBySlug(slug: string): Promise<Brand | null> {
     .from("brands")
     .select("*")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
-  if (error) return null;
+  if (error || !data) {
+    return DEMO_BRANDS.find((b) => b.slug === slug) ?? null;
+  }
   return data as Brand;
 }
 

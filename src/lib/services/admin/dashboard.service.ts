@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_ORDERS, DEMO_PRODUCTS } from "@/lib/demo-data";
 import type { Order, Product } from "@/types/domain.types";
@@ -30,7 +30,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const [ordersRes, productsRes, lowStockRes] = await Promise.all([
     supabase
@@ -62,7 +62,7 @@ export async function getRecentOrders(limit = 5): Promise<Order[]> {
     return DEMO_ORDERS.slice(0, limit);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("orders")
     .select("*")

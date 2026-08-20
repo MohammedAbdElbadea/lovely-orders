@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_ORDERS } from "@/lib/demo-data";
 import type { Order, OrderStatus, PaginatedResult } from "@/types/domain.types";
@@ -38,7 +38,7 @@ export async function getOrders(
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   let query = supabase.from("orders").select("*", { count: "exact" });
 
@@ -65,21 +65,15 @@ export async function getOrders(
   };
 }
 
-export async function getOrderById(id: string) {
+export async function getOrderById(id: string): Promise<Order | null> {
   if (!isSupabaseConfigured()) {
-    const order = DEMO_ORDERS.find((o) => o.id === id);
-    if (!order) return null;
-    return {
-      ...order,
-      items: order.items ?? [],
-      statusHistory: [],
-    };
+    return DEMO_ORDERS.find((o) => o.id === id) ?? null;
   }
 
-  const supabase = await createClient();
-  const { data: order } = await supabase
+  const supabase = createAdminClient();
+  const { data } = await supabase
     .from("orders")
-    .select("*")
+    .select("*, items:order_items(*), statusHistory:order_status_history(*)")
     .eq("id", id)
     .single();
 

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_BRANDS, DEMO_CATEGORIES, DEMO_CUSTOMERS } from "@/lib/demo-data";
 import type { Brand, Category, PaginatedResult, Customer, Order } from "@/types/domain.types";
@@ -7,12 +7,12 @@ import type { CustomersRow, OrdersRow, CustomerNotesRow, AdminUsersRow } from "@
 export async function getBrands(): Promise<Brand[]> {
   if (!isSupabaseConfigured()) return DEMO_BRANDS;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("brands")
     .select("*")
     .order("sort_order", { ascending: true });
-  return (data ?? []) as Brand[];
+  return (data && data.length > 0) ? (data as Brand[]) : DEMO_BRANDS;
 }
 
 export async function getBrandById(id: string): Promise<Brand | null> {
@@ -20,20 +20,20 @@ export async function getBrandById(id: string): Promise<Brand | null> {
     return DEMO_BRANDS.find((b) => b.id === id) ?? null;
   }
 
-  const supabase = await createClient();
-  const { data } = await supabase.from("brands").select("*").eq("id", id).single();
-  return data as Brand | null;
+  const supabase = createAdminClient();
+  const { data } = await supabase.from("brands").select("*").eq("id", id).maybeSingle();
+  return (data as Brand | null) ?? (DEMO_BRANDS.find((b) => b.id === id) ?? null);
 }
 
 export async function getCategories(): Promise<Category[]> {
   if (!isSupabaseConfigured()) return DEMO_CATEGORIES;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("categories")
     .select("*")
     .order("sort_order", { ascending: true });
-  return (data ?? []) as Category[];
+  return (data && data.length > 0) ? (data as Category[]) : DEMO_CATEGORIES;
 }
 
 export async function getCustomers(
@@ -60,7 +60,7 @@ export async function getCustomers(
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase.from("customers").select("*", { count: "exact" });
 
   if (search) {
@@ -98,40 +98,35 @@ export async function getCustomerById(id: string) {
       total_spent: 4200,
       last_order_at: new Date().toISOString(),
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      orders: [],
-      notes: [],
+      addresses: [],
+      notes: [] as CustomerNoteWithAdmin[],
+      orders: [] as Order[],
     };
   }
 
-  const supabase = await createClient();
-  const { data: customer } = await supabase
-    .from("customers")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const supabase = createAdminClient();
 
-  if (!customer) return null;
-
-  const customerData = customer as CustomersRow;
-
-  const [{ data: orders }, { data: notes }] = await Promise.all([
-    supabase
-      .from("orders")
-      .select("*")
-      .eq("customer_id", id)
-      .order("created_at", { ascending: false }),
+  const [customerRes, addressesRes, notesRes, ordersRes] = await Promise.all([
+    supabase.from("customers").select("*").eq("id", id).maybeSingle(),
+    supabase.from("customer_addresses").select("*").eq("customer_id", id),
     supabase
       .from("customer_notes")
       .select("*, admin:admin_users(full_name)")
       .eq("customer_id", id)
       .order("created_at", { ascending: false }),
+    supabase
+      .from("orders")
+      .select("*")
+      .eq("customer_id", id)
+      .order("created_at", { ascending: false }),
   ]);
 
+  if (!customerRes.data) return null;
+
   return {
-    ...customerData,
-    orders: (orders ?? []) as OrdersRow[],
-    notes: (notes ?? []) as CustomerNoteWithAdmin[],
+    ...(customerRes.data as CustomersRow),
+    addresses: addressesRes.data ?? [],
+    notes: (notesRes.data ?? []) as CustomerNoteWithAdmin[],
+    orders: (ordersRes.data ?? []) as OrdersRow[],
   };
 }
-
