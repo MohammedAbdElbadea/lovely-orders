@@ -30,20 +30,40 @@ export async function getReviews(options?: {
     return reviews.slice(0, limit);
   }
 
-  const supabase = await createClient();
-  let query = supabase
-    .from("reviews")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(limit);
+  try {
+    const supabase = await createClient();
+    let query = supabase
+      .from("reviews")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (options?.productId) query = query.eq("product_id", options.productId);
-  if (options?.status) query = query.eq("status", options.status);
-  else query = query.eq("status", "approved");
+    if (options?.productId) query = query.eq("product_id", options.productId);
+    if (options?.status) query = query.eq("status", options.status);
+    else query = query.eq("status", "approved");
 
-  const { data, error } = await query;
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Review[];
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) {
+      let reviews = [...DEMO_REVIEWS];
+      if (options?.productId) {
+        reviews = reviews.filter((r) => r.product_id === options.productId);
+      }
+      if (options?.status) {
+        reviews = reviews.filter((r) => r.status === options.status);
+      }
+      return reviews.slice(0, limit);
+    }
+    return data as Review[];
+  } catch {
+    let reviews = [...DEMO_REVIEWS];
+    if (options?.productId) {
+      reviews = reviews.filter((r) => r.product_id === options.productId);
+    }
+    if (options?.status) {
+      reviews = reviews.filter((r) => r.status === options.status);
+    }
+    return reviews.slice(0, limit);
+  }
 }
 
 export async function getApprovedReviews(limit = 6): Promise<Review[]> {

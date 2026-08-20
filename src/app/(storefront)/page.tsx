@@ -37,7 +37,15 @@ export default async function HomePage() {
     getFeaturedCollections().catch(() => []),
   ]);
 
-  const heroSection = sections.find((s) => s.section_type === "hero");
+  const safeSections = Array.isArray(sections) ? sections : [];
+  const safeFeaturedProducts = Array.isArray(featuredProducts) ? featuredProducts : [];
+  const safeBrands = Array.isArray(brands) ? brands : [];
+  const safeNewArrivals = Array.isArray(newArrivals) ? newArrivals : [];
+  const safeBestSellers = Array.isArray(bestSellers) ? bestSellers : [];
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+  const safeCollections = Array.isArray(collections) ? collections : [];
+
+  const heroSection = safeSections.find((s) => s?.section_type === "hero");
   const heroConfig = (heroSection?.config ?? {}) as Record<string, string>;
 
   return (
@@ -51,9 +59,9 @@ export default async function HomePage() {
         secondaryCtaHref={heroConfig.secondaryCtaHref}
       />
 
-      <BrandCarousel brands={brands} />
+      <BrandCarousel brands={safeBrands} />
 
-      {featuredProducts.length > 0 ? (
+      {safeFeaturedProducts.length > 0 ? (
         <section className="py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
@@ -67,7 +75,7 @@ export default async function HomePage() {
                 <TranslatedText path="common.viewAll" fallback="View All" />
               </Link>
             </div>
-            <ProductGrid products={featuredProducts} />
+            <ProductGrid products={safeFeaturedProducts} />
           </div>
         </section>
       ) : (
@@ -88,7 +96,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {newArrivals.length > 0 && (
+      {safeNewArrivals.length > 0 && (
         <section className="border-t border-luxury-border/20 bg-premium-black py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
@@ -102,12 +110,12 @@ export default async function HomePage() {
                 <TranslatedText path="common.viewAll" fallback="View All" />
               </Link>
             </div>
-            <ProductGrid products={newArrivals} />
+            <ProductGrid products={safeNewArrivals} />
           </div>
         </section>
       )}
 
-      {collections.length > 0 && (
+      {safeCollections.length > 0 && (
         <section className="py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
@@ -122,7 +130,7 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {collections.map((collection) => (
+              {safeCollections.map((collection) => (
                 <Link
                   key={collection.id}
                   href={`/collections/${collection.slug}`}
@@ -146,7 +154,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {bestSellers.length > 0 && (
+      {safeBestSellers.length > 0 && (
         <section className="border-t border-luxury-border/20 py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex items-end justify-between">
@@ -160,12 +168,12 @@ export default async function HomePage() {
                 <TranslatedText path="common.viewAll" fallback="View All" />
               </Link>
             </div>
-            <ProductGrid products={bestSellers} />
+            <ProductGrid products={safeBestSellers} />
           </div>
         </section>
       )}
 
-      <ReviewHighlight reviews={reviews} />
+      <ReviewHighlight reviews={safeReviews} />
 
       <section className="border-t border-luxury-border/20 bg-premium-black py-16">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">

@@ -11,15 +11,19 @@ export async function getCollections(): Promise<Collection[]> {
     return [];
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("collections")
-    .select("*")
-    .eq("is_active", true)
-    .order("sort_order", { ascending: true });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("collections")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
 
-  if (error) throw error;
-  return (data ?? []).map(mapCollection);
+    if (error || !data) return [];
+    return data.map(mapCollection);
+  } catch {
+    return [];
+  }
 }
 
 export async function getFeaturedCollections(): Promise<Collection[]> {
@@ -27,16 +31,20 @@ export async function getFeaturedCollections(): Promise<Collection[]> {
     return [];
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("collections")
-    .select("*")
-    .eq("is_active", true)
-    .eq("is_featured", true)
-    .order("sort_order", { ascending: true });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("collections")
+      .select("*")
+      .eq("is_active", true)
+      .eq("is_featured", true)
+      .order("sort_order", { ascending: true });
 
-  if (error) throw error;
-  return (data ?? []).map(mapCollection);
+    if (error || !data) return [];
+    return data.map(mapCollection);
+  } catch {
+    return [];
+  }
 }
 
 export async function getCollectionBySlug(slug: string): Promise<Collection | null> {
@@ -44,14 +52,18 @@ export async function getCollectionBySlug(slug: string): Promise<Collection | nu
     return null;
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("collections")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .maybeSingle();
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("collections")
+      .select("*")
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .maybeSingle();
 
-  if (error) throw error;
-  return data ? mapCollection(data) : null;
+    if (error || !data) return null;
+    return mapCollection(data);
+  } catch {
+    return null;
+  }
 }

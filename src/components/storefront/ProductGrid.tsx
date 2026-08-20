@@ -31,11 +31,11 @@ const itemVariants = {
 };
 
 export function ProductGrid({
-  products,
+  products = [],
   className,
   emptyMessage = "لم يتم العثور على منتجات.",
 }: ProductGridProps) {
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <div className="flex min-h-[240px] items-center justify-center rounded-luxury border border-dashed border-luxury-border/30 bg-surface-elevated/40 px-6 py-12 text-center">
         <p className="text-luxury-muted font-medium">{emptyMessage}</p>

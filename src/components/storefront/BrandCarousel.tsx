@@ -12,10 +12,10 @@ interface BrandCarouselProps {
 }
 
 export function BrandCarousel({
-  brands,
+  brands = [],
   title = "العلامات التجارية الفاخرة - Featured Brands",
 }: BrandCarouselProps) {
-  if (brands.length === 0) return null;
+  if (!brands || brands.length === 0) return null;
 
   return (
     <section className="border-b border-luxury-border/30 bg-surface-elevated/40 py-12 sm:py-16">

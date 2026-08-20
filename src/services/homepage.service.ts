@@ -8,28 +8,35 @@ function mapSection(row: Record<string, unknown>): HomepageSection {
 }
 
 export async function getHomepageSections(): Promise<HomepageSection[]> {
+  const fallback = DEMO_HOMEPAGE_SECTIONS.filter((s) => s.is_enabled);
   if (!isSupabaseConfigured()) {
-    return DEMO_HOMEPAGE_SECTIONS.filter((s) => s.is_enabled);
+    return fallback;
   }
 
-  const supabase = await createClient();
-  const now = new Date().toISOString();
+  try {
+    const supabase = await createClient();
+    const now = new Date().toISOString();
 
-  const { data, error } = await supabase
-    .from("homepage_sections")
-    .select("*")
-    .eq("is_enabled", true)
-    .order("sort_order", { ascending: true });
+    const { data, error } = await supabase
+      .from("homepage_sections")
+      .select("*")
+      .eq("is_enabled", true)
+      .order("sort_order", { ascending: true });
 
-  if (error) throw error;
+    if (error || !data || data.length === 0) return fallback;
 
-  return (data ?? [])
-    .filter((section) => {
-      const starts = section.starts_at as string | null;
-      const ends = section.ends_at as string | null;
-      if (starts && starts > now) return false;
-      if (ends && ends < now) return false;
-      return true;
-    })
-    .map(mapSection);
+    const filtered = data
+      .filter((section) => {
+        const starts = section.starts_at as string | null;
+        const ends = section.ends_at as string | null;
+        if (starts && starts > now) return false;
+        if (ends && ends < now) return false;
+        return true;
+      })
+      .map(mapSection);
+
+    return filtered.length > 0 ? filtered : fallback;
+  } catch {
+    return fallback;
+  }
 }

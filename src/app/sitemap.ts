@@ -4,8 +4,11 @@ import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_PRODUCTS, DEMO_BRANDS, DEMO_CATEGORIES } from "@/lib/demo-data";
 import { CMS_SLUGS } from "@/services/pages.service";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const rawSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || "https://lovely-orders.vercel.app";
+const siteUrl = rawSiteUrl.startsWith("http://") || rawSiteUrl.startsWith("https://")
+  ? rawSiteUrl
+  : `https://${rawSiteUrl}`;
 
 interface SitemapItem {
   slug: string;

@@ -10,10 +10,10 @@ interface ReviewHighlightProps {
 }
 
 export function ReviewHighlight({
-  reviews,
+  reviews = [],
   title = "آراء وتجارب عميلاتنا الفاخرة - Customer Reviews",
 }: ReviewHighlightProps) {
-  if (reviews.length === 0) return null;
+  if (!reviews || reviews.length === 0) return null;
 
   return (
     <section className="border-b border-luxury-border/30 bg-surface-elevated/30 py-16 sm:py-20">
