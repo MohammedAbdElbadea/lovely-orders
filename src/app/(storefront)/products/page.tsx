@@ -10,6 +10,9 @@ import { getBrands } from "@/services/brands.service";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { SortSelect } from "@/components/storefront/SortSelect";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface ProductsPageProps {
   searchParams: Promise<{
     q?: string;

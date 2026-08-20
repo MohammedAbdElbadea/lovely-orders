@@ -8,38 +8,46 @@ function mapPage(row: Record<string, unknown>): Page {
 }
 
 export async function getPageBySlug(slug: string): Promise<Page | null> {
+  const fallback = DEMO_PAGES.find((p) => p.slug === slug && p.status === "active") ?? null;
   if (!isSupabaseConfigured()) {
-    return (
-      DEMO_PAGES.find((p) => p.slug === slug && p.status === "active") ?? null
-    );
+    return fallback;
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("pages")
-    .select("*")
-    .eq("slug", slug)
-    .eq("status", "active")
-    .maybeSingle();
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("pages")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "active")
+      .maybeSingle();
 
-  if (error) throw error;
-  return data ? mapPage(data) : null;
+    if (error || !data) return fallback;
+    return mapPage(data);
+  } catch {
+    return fallback;
+  }
 }
 
 export async function getActivePages(): Promise<Page[]> {
+  const fallback = DEMO_PAGES.filter((p) => p.status === "active");
   if (!isSupabaseConfigured()) {
-    return DEMO_PAGES.filter((p) => p.status === "active");
+    return fallback;
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("pages")
-    .select("slug, title, updated_at")
-    .eq("status", "active")
-    .order("title", { ascending: true });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("pages")
+      .select("slug, title, updated_at")
+      .eq("status", "active")
+      .order("title", { ascending: true });
 
-  if (error) throw error;
-  return (data ?? []).map(mapPage);
+    if (error || !data || data.length === 0) return fallback;
+    return data.map(mapPage);
+  } catch {
+    return fallback;
+  }
 }
 
 export const CMS_SLUGS = [

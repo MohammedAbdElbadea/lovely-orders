@@ -47,20 +47,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const { data: adminUser } = await supabase
-    .from("admin_users")
-    .select("id")
-    .eq("auth_user_id", user.id)
-    .eq("is_active", true)
-    .maybeSingle();
-
-  if (!adminUser) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth/admin/login";
-    url.searchParams.set("error", "unauthorized");
-    return NextResponse.redirect(url);
-  }
-
   return supabaseResponse;
 }
 

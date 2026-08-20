@@ -1758,6 +1758,45 @@ if (!globalThis.__DEMO_PAGES) {
       created_at: now,
       updated_at: now,
     },
+    {
+      id: "page-005",
+      title: "سياسة الإرجاع والاستبدال (Returns & Refund)",
+      slug: "refund",
+      content:
+        "<div className='space-y-6'><h2 className='text-2xl font-bold text-gold'>سياسة الإرجاع والاستبدال الفاخرة</h2><p className='leading-relaxed text-luxury-muted'>ثقتكِ ورضاكِ التام هما غايتنا الأساسية في <strong>LOVELY ORDERS</strong>. نتيح لكِ استبدال أو إرجاع المنتجات وفق الشروط التالية لضمان معايير السلامة والنظافة:</p><div className='rounded-luxury border border-luxury-border/30 bg-surface-elevated p-4 space-y-3'><h3 className='font-bold text-luxury-white text-lg'>🔄 شروط الإرجاع والاستبدال:</h3><ul className='list-disc pl-5 text-sm text-luxury-muted space-y-2'><li><strong>معاينة فورية:</strong> يحق للعميلة معاينة الطرد والتأكد من مطابقته قبل الاستلام والسداد مع المندوب.</li><li><strong>المدة الزمنية:</strong> يمكن طلب الاستبدال أو الإرجاع خلال 14 يوماً من تاريخ الاستلام في حال وجود عيب صناعة أو تلف أثناء الشحن.</li><li><strong>حالة المنتج:</strong> نظراً لطبيعة مستحضرات التجميل والعناية الشخصية، يجب أن يكون المنتج غير مستخدم ومغلقاً بغلافه الأصلي والسلوفان المصنعي.</li></ul></div><div className='rounded-luxury border border-luxury-border/30 bg-surface-elevated p-4 space-y-3'><h3 className='font-bold text-luxury-white text-lg'>📞 كيفية تقديم طلب الإرجاع:</h3><p className='text-sm text-luxury-muted'>تفضلي بالتواصل معنا مباشرة عبر واتساب أو الهاتف على الرقم <strong className='text-gold font-mono'>01067258266</strong> مع إرفاق رقم الطلب وصورة المنتج، وسيتم التنسيق معكِ فوراً.</p></div></div>",
+      meta_title: "سياسة الإرجاع والاستبدال | LOVELY ORDERS",
+      meta_description: "تعرف على شروط وإجراءات الإرجاع والاستبدال السهلة والمضمونة لمنتجات LOVELY ORDERS",
+      status: "active",
+      published_at: now,
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: "page-006",
+      title: "الأسئلة الشائعة (FAQ)",
+      slug: "faq",
+      content:
+        "<div className='space-y-4'><h2 className='text-xl font-bold text-gold'>أكثر الأسئلة تكراراً</h2><div className='space-y-3'><p><strong>هل المنتجات أصلية؟</strong><br/>نعم، جميع منتجاتنا مستوردة وأصلية 100% من مصادرها الرسمية.</p><p><strong>هل يمكن المعاينة قبل الاستلام؟</strong><br/>نعم بكل تأكيد، يمكنكِ مراجعة الطلب بحضور مندوب الشحن.</p></div></div>",
+      meta_title: "الأسئلة الشائعة | LOVELY ORDERS",
+      meta_description: "إجابات على أكثر الأسئلة شيوعاً حول منتجات وخدمات LOVELY ORDERS",
+      status: "active",
+      published_at: now,
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: "page-007",
+      title: "سياسة الخصوصية (Privacy Policy)",
+      slug: "privacy",
+      content:
+        "<div className='space-y-4'><h2 className='text-xl font-bold text-gold'>سياسة الخصوصية وأمان البيانات</h2><p className='text-luxury-muted'>نحن نلتزم بحماية بيانات عملائنا الشخصية ولا يتم مشاركتها مع أي جهة خارجية إلا لغرض إتمام الشحن والتوصيل فقط.</p></div>",
+      meta_title: "سياسة الخصوصية | LOVELY ORDERS",
+      meta_description: "سياسة الخصوصية وحماية بيانات المستخدمين في LOVELY ORDERS",
+      status: "active",
+      published_at: now,
+      created_at: now,
+      updated_at: now,
+    },
   ] as Page[];
 }
 export const DEMO_PAGES: Page[] = globalThis.__DEMO_PAGES;

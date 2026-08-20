@@ -15,6 +15,9 @@ import { getFeaturedBrands } from "@/services/brands.service";
 import { getFeaturedCollections } from "@/services/collections.service";
 import { getApprovedReviews } from "@/services/reviews.service";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   const [
     sections,
