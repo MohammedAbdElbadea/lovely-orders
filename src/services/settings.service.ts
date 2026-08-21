@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured, PAYMENT_NUMBER } from "@/lib/constants";
 import { DEMO_STORE_SETTINGS } from "@/lib/demo-data";
 import type { StoreSetting } from "@/types/domain.types";
@@ -14,14 +14,14 @@ export async function getSetting(key: string): Promise<unknown | null> {
     return setting?.value ?? null;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("store_settings")
     .select("value")
     .eq("key", key)
-    .single();
+    .maybeSingle();
 
-  if (error) return null;
+  if (error || !data) return null;
   return data?.value ?? null;
 }
 
@@ -48,7 +48,7 @@ export async function updateSetting(
     return setting;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("store_settings")
     .upsert({ key, value: value as import("@/types/database.types").Json, updated_by: updatedBy ?? null })
@@ -61,15 +61,13 @@ export async function updateSetting(
 
 export async function getPaymentSettings(): Promise<PaymentSettings> {
   const [vodafone, instapay] = await Promise.all([
-    getSetting("payment.vodafone_number"),
-    getSetting("payment.instapay_number"),
+    getSetting("payment_vodafone_cash_number"),
+    getSetting("payment_instapay_number"),
   ]);
 
   return {
-    vodafoneNumber:
-      typeof vodafone === "string" ? vodafone : PAYMENT_NUMBER,
-    instapayNumber:
-      typeof instapay === "string" ? instapay : PAYMENT_NUMBER,
+    vodafoneNumber: (vodafone as string) || PAYMENT_NUMBER,
+    instapayNumber: (instapay as string) || PAYMENT_NUMBER,
   };
 }
 
@@ -78,7 +76,7 @@ export async function getAllSettings(): Promise<StoreSetting[]> {
     return [...DEMO_STORE_SETTINGS];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase.from("store_settings").select("*");
 
   if (error) throw new Error(error.message);

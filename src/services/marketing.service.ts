@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_BANNERS, DEMO_COUPONS, DEMO_DISCOUNTS } from "@/lib/demo-data";
 import type { Coupon, Discount, PromotionalBanner } from "@/types/domain.types";
@@ -17,7 +17,7 @@ export async function getDiscounts(activeOnly = true): Promise<Discount[]> {
       : [...DEMO_DISCOUNTS];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase.from("discounts").select("*").order("created_at", {
     ascending: false,
   });
@@ -27,8 +27,12 @@ export async function getDiscounts(activeOnly = true): Promise<Discount[]> {
   }
 
   const { data, error } = await query;
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Discount[];
+  if (error || !data || data.length === 0) {
+    return activeOnly
+      ? DEMO_DISCOUNTS.filter((d) => d.is_active && d.status === "active")
+      : [...DEMO_DISCOUNTS];
+  }
+  return data as Discount[];
 }
 
 export async function applyCoupon(
@@ -56,13 +60,13 @@ export async function applyCoupon(
     return { valid: true, discountAmount, coupon };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data: coupon, error } = await supabase
     .from("coupons")
     .select("*, discount:discounts(*)")
     .eq("code", code.toUpperCase())
     .eq("is_active", true)
-    .single();
+    .maybeSingle();
 
   if (error || !coupon) {
     return { valid: false, discountAmount: 0, message: "Invalid coupon code" };
@@ -98,7 +102,7 @@ export async function getBanners(placement = "homepage"): Promise<PromotionalBan
     ).sort((a, b) => a.sort_order - b.sort_order);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("promotional_banners")
     .select("*")
@@ -106,6 +110,10 @@ export async function getBanners(placement = "homepage"): Promise<PromotionalBan
     .eq("placement", placement)
     .order("sort_order");
 
-  if (error) throw new Error(error.message);
-  return (data ?? []) as PromotionalBanner[];
+  if (error || !data || data.length === 0) {
+    return DEMO_BANNERS.filter(
+      (b) => b.is_active && b.placement === placement
+    ).sort((a, b) => a.sort_order - b.sort_order);
+  }
+  return data as PromotionalBanner[];
 }

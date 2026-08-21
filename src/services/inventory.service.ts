@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_INVENTORY_LOGS, DEMO_PRODUCTS } from "@/lib/demo-data";
 import type { InventoryLog, InventoryReason, Product } from "@/types/domain.types";
@@ -40,7 +40,7 @@ export async function adjustStock(
     return { product, log };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: product, error: fetchError } = await supabase
     .from("products")
@@ -91,7 +91,7 @@ export async function getLowStock(threshold?: number): Promise<Product[]> {
     );
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -108,7 +108,7 @@ export async function getOutOfStock(): Promise<Product[]> {
     return DEMO_PRODUCTS.filter((p) => p.stock_quantity === 0);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -133,7 +133,7 @@ export async function getInventoryLogs(options?: {
     return logs.slice(0, limit);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("inventory_logs")
     .select("*")

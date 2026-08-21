@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { generateTrackingToken } from "@/lib/utils";
@@ -313,7 +312,7 @@ export async function getOrders(options?: {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("orders")
     .select("*, items:order_items(*)", { count: "exact" })
@@ -381,7 +380,7 @@ export async function getOrderByNumber(
     return DEMO_ORDERS.find((o) => o.order_number === orderNumber) ?? null;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("orders")
     .select("*, items:order_items(*)")
@@ -427,7 +426,7 @@ export async function updateOrderStatus(
     return order;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: existing } = await supabase
     .from("orders")
@@ -526,7 +525,7 @@ export async function verifyPayment(
     return order;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("orders")
     .update({

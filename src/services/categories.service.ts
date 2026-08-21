@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_CATEGORIES } from "@/lib/demo-data";
 import type { Category } from "@/types/domain.types";
@@ -28,7 +28,7 @@ export async function getCategories(activeOnly = true): Promise<Category[]> {
     }));
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase.from("categories").select("*").order("sort_order");
 
   if (activeOnly) query = query.eq("is_active", true);
@@ -63,7 +63,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     return DEMO_CATEGORIES.find((c) => c.slug === slug) ?? null;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("categories")
     .select("*")
@@ -96,7 +96,7 @@ export async function createCategory(input: CategoryInput): Promise<Category> {
     return category;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("categories")
     .insert(input)
@@ -122,7 +122,7 @@ export async function updateCategory(
     return DEMO_CATEGORIES[index];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("categories")
     .update(input)
@@ -142,11 +142,9 @@ export async function deleteCategory(id: string): Promise<void> {
     return;
   }
 
-  const supabase = await createClient();
-  // Unlink products and child categories first
-  await supabase.from("products").update({ category_id: null }).eq("category_id", id);
-  await supabase.from("products").update({ subcategory_id: null }).eq("subcategory_id", id);
-  await supabase.from("categories").update({ parent_id: null }).eq("parent_id", id);
+  const supabase = createAdminClient();
+  // Unlink any products assigned to this category first so foreign key constraint does not fail
+  await supabase.from("products").update({ category_id: null, subcategory_id: null }).or(`category_id.eq.${id},subcategory_id.eq.${id}`);
 
   const { error } = await supabase.from("categories").delete().eq("id", id);
   if (error) throw new Error(error.message);

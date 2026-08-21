@@ -79,7 +79,7 @@ export async function getLowStockProducts(limit = 5): Promise<Product[]> {
     ).slice(0, limit);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("products")
     .select("*")
@@ -102,7 +102,7 @@ export async function getMonthlyRevenueTrend() {
     ];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("orders")
     .select("created_at, total_amount, payment_status")
@@ -143,16 +143,15 @@ export async function getOrderStatusBreakdown() {
     ];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase.from("orders").select("status");
 
-  const orders = data ?? [];
+  const orders: Array<{ status: string }> = (data ?? []) as Array<{ status: string }>;
   return [
-    { statusLabel: "في انتظار الدفع (Pending)", count: orders.filter((o) => o.status === "pending_payment").length, color: "bg-amber-400" },
-    { statusLabel: "تم تأكيد الدفع (Paid)", count: orders.filter((o) => o.status === "paid").length, color: "bg-emerald-500" },
-    { statusLabel: "جاري التجهيز (Processing)", count: orders.filter((o) => o.status === "processing").length, color: "bg-purple-500" },
-    { statusLabel: "مع المندوب للشحن (Shipped)", count: orders.filter((o) => o.status === "shipped").length, color: "bg-blue-500" },
-    { statusLabel: "مكتمل وتسليم (Delivered/Completed)", count: orders.filter((o) => o.status === "delivered" || o.status === "completed").length, color: "bg-teal-400" },
+    { statusLabel: "في انتظار الدفع (Pending)", count: orders.filter((o: { status: string }) => o.status === "pending_payment").length, color: "bg-amber-400" },
+    { statusLabel: "تم تأكيد الدفع (Paid)", count: orders.filter((o: { status: string }) => o.status === "paid").length, color: "bg-emerald-500" },
+    { statusLabel: "جاري التجهيز (Processing)", count: orders.filter((o: { status: string }) => o.status === "processing").length, color: "bg-purple-500" },
+    { statusLabel: "مع المندوب للشحن (Shipped)", count: orders.filter((o: { status: string }) => o.status === "shipped").length, color: "bg-blue-500" },
+    { statusLabel: "مكتمل وتسليم (Delivered/Completed)", count: orders.filter((o: { status: string }) => o.status === "delivered" || o.status === "completed").length, color: "bg-teal-400" },
   ];
 }
-

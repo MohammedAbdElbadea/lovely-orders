@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_REVIEWS } from "@/lib/demo-data";
 import type { Review, ReviewStatus } from "@/types/domain.types";
@@ -31,7 +31,7 @@ export async function getReviews(options?: {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     let query = supabase
       .from("reviews")
       .select("*")
@@ -91,7 +91,7 @@ export async function submitReview(input: SubmitReviewInput): Promise<Review> {
     return review;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("reviews")
     .insert({
@@ -121,7 +121,7 @@ export async function moderateReview(
     return review;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("reviews")
     .update({ status })

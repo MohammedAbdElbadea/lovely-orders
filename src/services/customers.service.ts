@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_CUSTOMERS } from "@/lib/demo-data";
 import type { Customer, CustomerSegment, PaginatedResult } from "@/types/domain.types";
@@ -24,7 +24,7 @@ export async function getCustomers(options?: {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("customers")
     .select("*", { count: "exact" })
@@ -49,14 +49,14 @@ export async function getCustomerById(id: string): Promise<Customer | null> {
     return DEMO_CUSTOMERS.find((c) => c.id === id) ?? null;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("customers")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (error) return null;
+  if (error || !data) return null;
   return data as Customer;
 }
 
@@ -72,7 +72,7 @@ export async function updateSegment(
     return customer;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("customers")
     .update({ segment })

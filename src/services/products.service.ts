@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured, DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import {
   DEMO_PRODUCTS,
@@ -108,7 +108,7 @@ export async function getProducts(
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("products")
     .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)", {
@@ -163,7 +163,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     return product ? enrichProduct(product) : null;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("products")
     .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*), variants:product_variants(*)")
@@ -216,7 +216,7 @@ export async function getRelatedProducts(
     return enrichProducts(related.slice(0, limit));
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("products")
     .select("*, brand:brands(*), category:categories!products_category_id_fkey(*), images:product_images(*)")
@@ -262,7 +262,7 @@ export async function getProductsByCollection(
     return { data: [], total: 0, limit, offset };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data: links, error: linkError } = await supabase
     .from("product_collections")
     .select("product_id")
@@ -303,7 +303,7 @@ export async function getPriceRange(): Promise<{ min: number; max: number }> {
     return { min: Math.min(...prices), max: Math.max(...prices) };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("products")
     .select("price")
@@ -340,7 +340,7 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
     return enrichProduct(product);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("products")
     .insert({
@@ -369,7 +369,7 @@ export async function updateProduct(
     return enrichProduct(DEMO_PRODUCTS[index]);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("products")
     .update(input)
@@ -397,7 +397,7 @@ export async function deleteProduct(id: string): Promise<void> {
     return;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_HOMEPAGE_SECTIONS, DEMO_PAGES } from "@/lib/demo-data";
 import type { HomepageSection, Page } from "@/types/domain.types";
@@ -10,15 +10,19 @@ export async function getHomepageSections(): Promise<HomepageSection[]> {
     );
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("homepage_sections")
     .select("*")
     .eq("is_enabled", true)
     .order("sort_order");
 
-  if (error) throw new Error(error.message);
-  return (data ?? []) as HomepageSection[];
+  if (error || !data || data.length === 0) {
+    return DEMO_HOMEPAGE_SECTIONS.filter((s) => s.is_enabled).sort(
+      (a, b) => a.sort_order - b.sort_order
+    );
+  }
+  return data as HomepageSection[];
 }
 
 export async function getPageBySlug(slug: string): Promise<Page | null> {
@@ -28,15 +32,19 @@ export async function getPageBySlug(slug: string): Promise<Page | null> {
     );
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("pages")
     .select("*")
     .eq("slug", slug)
     .eq("status", "active")
-    .single();
+    .maybeSingle();
 
-  if (error) return null;
+  if (error || !data) {
+    return (
+      DEMO_PAGES.find((p) => p.slug === slug && p.status === "active") ?? null
+    );
+  }
   return data as Page;
 }
 
@@ -51,7 +59,7 @@ export async function updateHomepageSection(
     return section;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("homepage_sections")
     .update(updates as import("@/types/database.types").HomepageSectionsUpdate)

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import type { Collection } from "@/types/domain.types";
 
@@ -12,7 +12,7 @@ export async function getCollections(): Promise<Collection[]> {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("collections")
       .select("*")
@@ -32,7 +32,7 @@ export async function getFeaturedCollections(): Promise<Collection[]> {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("collections")
       .select("*")
@@ -53,7 +53,7 @@ export async function getCollectionBySlug(slug: string): Promise<Collection | nu
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("collections")
       .select("*")

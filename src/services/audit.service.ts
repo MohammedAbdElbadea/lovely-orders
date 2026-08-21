@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_AUDIT_LOGS } from "@/lib/demo-data";
 import type { AuditLog, LoginHistoryEntry, PaginatedResult } from "@/types/domain.types";
@@ -40,7 +40,7 @@ export async function logAudit(input: LogAuditInput): Promise<AuditLog> {
     return entry;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("audit_logs")
     .insert({
@@ -85,7 +85,7 @@ export async function getAuditLogs(options?: {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("audit_logs")
     .select("*", { count: "exact" })
@@ -119,7 +119,7 @@ export async function logLogin(input: LogLoginInput): Promise<LoginHistoryEntry>
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("login_history")
     .insert({

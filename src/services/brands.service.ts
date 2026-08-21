@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_BRANDS } from "@/lib/demo-data";
 import type { Brand } from "@/types/domain.types";
@@ -22,7 +22,7 @@ export async function getBrands(activeOnly = true): Promise<Brand[]> {
       : [...DEMO_BRANDS];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   let query = supabase.from("brands").select("*").order("sort_order");
 
   if (activeOnly) query = query.eq("is_active", true);
@@ -46,7 +46,7 @@ export async function getBrandBySlug(slug: string): Promise<Brand | null> {
     return DEMO_BRANDS.find((b) => b.slug === slug) ?? null;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("brands")
     .select("*")
@@ -79,7 +79,7 @@ export async function createBrand(input: BrandInput): Promise<Brand> {
     return brand;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("brands")
     .insert(input)
@@ -105,7 +105,7 @@ export async function updateBrand(
     return DEMO_BRANDS[index];
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("brands")
     .update(input)
@@ -125,7 +125,7 @@ export async function deleteBrand(id: string): Promise<void> {
     return;
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   // Unlink any products assigned to this brand first so foreign key constraint does not fail
   await supabase.from("products").update({ brand_id: null }).eq("brand_id", id);
 

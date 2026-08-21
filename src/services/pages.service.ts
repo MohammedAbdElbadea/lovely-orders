@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_PAGES } from "@/lib/demo-data";
 import type { Page } from "@/types/domain.types";
@@ -14,7 +14,7 @@ export async function getPageBySlug(slug: string): Promise<Page | null> {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("pages")
       .select("*")
@@ -36,7 +36,7 @@ export async function getActivePages(): Promise<Page[]> {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("pages")
       .select("slug, title, updated_at")

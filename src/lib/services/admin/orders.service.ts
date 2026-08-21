@@ -1,7 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_ORDERS } from "@/lib/demo-data";
-import type { Order, OrderStatus, PaginatedResult } from "@/types/domain.types";
+import type { Order, OrderItem, OrderStatus, PaginatedResult } from "@/types/domain.types";
 
 export interface OrderFilters {
   status?: OrderStatus;
@@ -10,6 +10,17 @@ export interface OrderFilters {
   limit?: number;
   offset?: number;
 }
+
+export type AdminOrderDetail = Order & {
+  items: OrderItem[];
+  statusHistory: {
+    id: string;
+    previous_status: OrderStatus | null;
+    new_status: OrderStatus;
+    note: string | null;
+    created_at: string;
+  }[];
+};
 
 export async function getOrders(
   filters: OrderFilters = {}
@@ -65,19 +76,25 @@ export async function getOrders(
   };
 }
 
-export async function getOrderById(id: string): Promise<Order | null> {
+export async function getOrderById(id: string): Promise<AdminOrderDetail | null> {
   if (!isSupabaseConfigured()) {
-    return DEMO_ORDERS.find((o) => o.id === id) ?? null;
+    const order = DEMO_ORDERS.find((o) => o.id === id);
+    if (!order) return null;
+    return {
+      ...order,
+      items: order.items ?? [],
+      statusHistory: [],
+    };
   }
 
   const supabase = createAdminClient();
-  const { data } = await supabase
+  const { data: order, error } = await supabase
     .from("orders")
-    .select("*, items:order_items(*), statusHistory:order_status_history(*)")
+    .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (!order) return null;
+  if (error || !order) return null;
 
   const { data: items } = await supabase
     .from("order_items")
@@ -92,7 +109,13 @@ export async function getOrderById(id: string): Promise<Order | null> {
 
   return {
     ...(order as Order),
-    items: items ?? [],
-    statusHistory: history ?? [],
+    items: (items ?? []) as OrderItem[],
+    statusHistory: (history ?? []).map((h) => ({
+      id: h.id as string,
+      previous_status: (h.previous_status ?? null) as OrderStatus | null,
+      new_status: h.new_status as OrderStatus,
+      note: (h.note ?? null) as string | null,
+      created_at: h.created_at as string,
+    })),
   };
 }

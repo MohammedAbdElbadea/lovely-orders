@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/constants";
 import { DEMO_HOMEPAGE_SECTIONS } from "@/lib/demo-data";
 import type { HomepageSection } from "@/types/domain.types";
@@ -14,7 +14,7 @@ export async function getHomepageSections(): Promise<HomepageSection[]> {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const now = new Date().toISOString();
 
     const { data, error } = await supabase
