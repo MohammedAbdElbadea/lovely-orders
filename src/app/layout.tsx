@@ -83,6 +83,7 @@ export const metadata: Metadata = {
 };
 
 import { LocaleProvider } from "@/lib/i18n";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -114,7 +115,19 @@ export default function RootLayout({
         className={`${display.variable} ${sans.variable} min-h-screen bg-deep-black font-sans antialiased`}
       >
         <LocaleProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            {children}
+            <Toaster
+              position="top-center"
+              theme="dark"
+              richColors
+              closeButton
+              dir="rtl"
+              toastOptions={{
+                className: "border border-gold/30 bg-premium-black text-luxury-white shadow-2xl",
+              }}
+            />
+          </ToastProvider>
         </LocaleProvider>
       </body>
     </html>

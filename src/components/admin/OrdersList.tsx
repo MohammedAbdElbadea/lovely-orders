@@ -10,14 +10,14 @@ import type { Order } from "@/types/domain.types";
 import { useRealtimeOrders } from "@/hooks/use-realtime-orders";
 
 const statusOptions = [
-  { value: "", label: "All statuses" },
-  { value: "pending_payment", label: "Pending Payment" },
-  { value: "paid", label: "Paid" },
-  { value: "processing", label: "Processing" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Delivered" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "", label: "جميع الحالات (All statuses)" },
+  { value: "pending_payment", label: "في انتظار الدفع (Pending Payment)" },
+  { value: "paid", label: "تم الدفع (Paid)" },
+  { value: "processing", label: "جاري التجهيز (Processing)" },
+  { value: "shipped", label: "مع المندوب للشحن (Shipped)" },
+  { value: "delivered", label: "تم التوصيل (Delivered)" },
+  { value: "completed", label: "مكتمل (Completed)" },
+  { value: "cancelled", label: "ملغي (Cancelled)" },
 ];
 
 interface OrdersListProps {
@@ -37,42 +37,57 @@ export function OrdersList({ orders }: OrdersListProps) {
   const columns: Column<Order>[] = [
     {
       key: "order_number",
-      header: "Order",
+      header: "رقم الطلب (Order)",
       render: (row) => (
-        <Link href={`/admin/orders/${row.id}`} className="font-medium text-gold hover:underline">
+        <Link
+          href={`/admin/orders/${row.id}`}
+          className="font-bold text-gold hover:underline font-mono inline-block py-1"
+        >
           {row.order_number}
         </Link>
       ),
     },
-    { key: "guest_name", header: "Customer" },
-    { key: "guest_phone", header: "Phone" },
+    { key: "guest_name", header: "اسم العميل" },
+    {
+      key: "guest_phone",
+      header: "رقم الهاتف",
+      render: (row) => <span className="font-mono text-luxury-muted">{row.guest_phone}</span>,
+    },
     {
       key: "total_amount",
-      header: "Total",
-      render: (row) => formatPrice(Number(row.total_amount), "EGP", "en-EG"),
+      header: "المبلغ الإجمالي",
+      render: (row) => (
+        <span className="font-bold font-mono text-luxury-white">
+          {formatPrice(Number(row.total_amount), "EGP", "en-EG")}
+        </span>
+      ),
     },
     {
       key: "status",
-      header: "Status",
+      header: "حالة الطلب",
       render: (row) => <StatusBadge status={row.status} type="order" />,
     },
     {
       key: "payment_status",
-      header: "Payment",
+      header: "حالة الدفع",
       render: (row) => <StatusBadge status={row.payment_status} type="payment" />,
     },
     {
       key: "created_at",
-      header: "Date",
-      render: (row) => new Date(row.created_at).toLocaleDateString(),
+      header: "التاريخ",
+      render: (row) => (
+        <span className="text-xs text-luxury-muted font-mono">
+          {new Date(row.created_at).toLocaleDateString("ar-EG")}
+        </span>
+      ),
     },
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="max-w-xs">
+    <div className="space-y-3 sm:space-y-4 max-w-full">
+      <div className="w-full sm:max-w-xs">
         <Select
-          label="Filter by status"
+          label="تصفية بحسب الحالة"
           options={statusOptions}
           value={statusFilter}
           onChange={(e) => {
@@ -87,7 +102,7 @@ export function OrdersList({ orders }: OrdersListProps) {
         data={filtered}
         columns={columns}
         searchKeys={["order_number", "guest_name", "guest_phone"]}
-        searchPlaceholder="Search orders..."
+        searchPlaceholder="ابحث برقم الطلب، اسم العميل، أو الهاتف..."
       />
     </div>
   );

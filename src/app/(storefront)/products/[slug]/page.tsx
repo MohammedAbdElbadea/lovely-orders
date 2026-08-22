@@ -5,6 +5,7 @@ import { Star } from "lucide-react";
 import { ProductGallery } from "@/components/storefront/ProductGallery";
 import { ProductActions } from "@/components/storefront/ProductActions";
 import { ProductGrid } from "@/components/storefront/ProductGrid";
+import { ProductTabs } from "@/components/storefront/ProductTabs";
 import { ReviewSection } from "@/components/storefront/ReviewSection";
 import { getProductBySlug, getRelatedProducts } from "@/services/products.service";
 import { getPrimaryImage } from "@/lib/product-utils";
@@ -158,17 +159,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 primaryImageUrl={primaryImage?.url}
               />
             </div>
-
-            {product.description && (
-              <div className="prose-luxury mt-10 border-t border-luxury-border/20 pt-8">
-                <h2 className="mb-4 font-display text-xl">Description</h2>
-                <div
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-              </div>
-            )}
           </div>
         </div>
+
+        <ProductTabs
+          description={product.description}
+          shortDescription={product.short_description}
+          productName={product.name}
+          categoryName={product.category?.name}
+        />
 
         <ReviewSection reviews={reviews} productId={product.id} />
 

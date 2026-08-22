@@ -42,56 +42,58 @@ export function SettingsForm({ initial }: SettingsFormProps) {
 
     startTransition(async () => {
       const result = await updateSettings(formData);
-      if (result.success) setMessage("Settings saved successfully");
-      else setError(result.error);
+      if (result.success) setMessage("تم حفظ وتحديث الإعدادات بنجاح ✅");
+      else setError(result.error ?? "حدث خطأ أثناء الحفظ");
     });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 lg:grid-cols-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 lg:grid-cols-2 max-w-full">
       {message && (
-        <div className="lg:col-span-2 rounded-luxury border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
+        <div className="lg:col-span-2 rounded-luxury border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs sm:text-sm font-semibold text-emerald-400 animate-fade-in">
           {message}
         </div>
       )}
       {error && (
-        <div className="lg:col-span-2 rounded-luxury border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+        <div className="lg:col-span-2 rounded-luxury border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs sm:text-sm font-semibold text-red-400 animate-fade-in">
           {error}
         </div>
       )}
 
-      <Card>
-        <CardHeader><CardTitle>Store Settings</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <Input label="Store Name" {...register("storeName")} />
-          <Input label="Phone" {...register("storePhone")} />
-          <Input label="Email" type="email" {...register("storeEmail")} />
+      <Card className="border-luxury-border/30 bg-surface-elevated/40">
+        <CardHeader className="p-4 sm:p-6"><CardTitle className="text-base sm:text-lg">بيانات المتجر الأساسية (Store Info)</CardTitle></CardHeader>
+        <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
+          <Input label="اسم المتجر (Store Name)" {...register("storeName")} />
+          <Input label="رقم الهاتف والتواصل (Phone)" {...register("storePhone")} />
+          <Input label="البريد الإلكتروني الرسمي (Email)" type="email" {...register("storeEmail")} />
           <Input
-            label="Low Stock Threshold"
+            label="حد تنبيه انخفاض المخزون (Low Stock Threshold)"
             type="number"
             {...register("lowStockThreshold")}
           />
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader><CardTitle>Payment Settings</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
+      <Card className="border-luxury-border/30 bg-surface-elevated/40">
+        <CardHeader className="p-4 sm:p-6"><CardTitle className="text-base sm:text-lg">إعدادات أرقام الدفع والتحويل 💳</CardTitle></CardHeader>
+        <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
           <Input
-            label="Vodafone Cash Number"
+            label="رقم محفظة فودافون كاش (Vodafone Cash)"
             {...register("vodafoneNumber")}
-            hint="Number customers send payments to"
+            hint="الرقم الذي يحول عليه العملاء عند الدفع بفودافون كاش"
           />
           <Input
-            label="InstaPay Number"
+            label="رقم حساب انستا باي (InstaPay)"
             {...register("instapayNumber")}
-            hint="InstaPay account for receiving payments"
+            hint="الرقم / المعرف المخصص لاستقبال تحويلات InstaPay"
           />
         </CardContent>
       </Card>
 
       <div className="lg:col-span-2">
-        <Button type="submit" loading={isPending}>Save Settings</Button>
+        <Button type="submit" loading={isPending} className="w-full sm:w-auto h-11 px-8 text-sm font-semibold">
+          حفظ الإعدادات
+        </Button>
       </div>
     </form>
   );

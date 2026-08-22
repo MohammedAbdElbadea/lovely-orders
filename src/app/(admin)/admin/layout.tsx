@@ -1,8 +1,6 @@
 import { requireAdminSession } from "@/lib/rbac/server-auth";
 import { getNotifications } from "@/lib/services/admin/misc.service";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminHeader } from "@/components/admin/AdminHeader";
-import { AutoRefreshOnFocus } from "@/components/shared/AutoRefreshOnFocus";
+import { AdminShell } from "@/components/admin/AdminShell";
 
 export default async function AdminLayout({
   children,
@@ -15,18 +13,14 @@ export default async function AdminLayout({
     (session.admin.role as { name?: string } | undefined)?.name ?? "admin";
 
   return (
-    <div className="min-h-screen bg-deep-black">
-      <AutoRefreshOnFocus />
-      <AdminSidebar permissions={session.permissions} />
-      <div className="pl-64">
-        <AdminHeader
-          adminName={session.admin.full_name}
-          adminEmail={session.admin.email}
-          roleName={roleName}
-          notifications={notifications}
-        />
-        <main className="p-6">{children}</main>
-      </div>
-    </div>
+    <AdminShell
+      permissions={session.permissions}
+      adminName={session.admin.full_name}
+      adminEmail={session.admin.email}
+      roleName={roleName}
+      notifications={notifications}
+    >
+      {children}
+    </AdminShell>
   );
 }

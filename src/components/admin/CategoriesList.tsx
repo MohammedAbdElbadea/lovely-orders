@@ -135,14 +135,14 @@ export function CategoriesList({ categories: initialCategories }: CategoriesList
 
       {/* Add Category Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg rounded-luxury border border-luxury-border/40 bg-white p-6 shadow-xl animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-luxury-border/20">
-              <h2 className="font-display text-xl text-luxury-white">إضافة فئة جديدة</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-3.5 sm:p-4">
+          <div className="w-full max-w-lg rounded-luxury border border-luxury-border/40 bg-premium-black p-4 sm:p-6 shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-luxury-border/20">
+              <h2 className="font-display text-lg sm:text-xl font-bold text-luxury-white">إضافة فئة جديدة</h2>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="text-luxury-muted hover:text-luxury-white"
+                className="text-luxury-muted hover:text-luxury-white p-1"
               >
                 <X className="h-5 w-5" />
               </button>

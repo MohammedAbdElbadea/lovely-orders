@@ -21,25 +21,29 @@ export function InventoryTable({ products, showAdjust = true }: InventoryTablePr
   const columns: Column<Product>[] = [
     {
       key: "name",
-      header: "Product",
+      header: "المنتج (Product)",
       render: (row) => (
-        <Link href={`/admin/products/${row.id}/edit`} className="text-gold hover:underline">
+        <Link href={`/admin/products/${row.id}/edit`} className="font-semibold text-gold hover:underline block py-1">
           {row.name}
         </Link>
       ),
     },
-    { key: "sku", header: "SKU" },
+    {
+      key: "sku",
+      header: "الكود (SKU)",
+      render: (row) => <span className="font-mono text-luxury-muted">{row.sku}</span>,
+    },
     {
       key: "stock_quantity",
-      header: "Stock",
+      header: "الكمية الحالية",
       render: (row) => (
         <span
           className={
             row.stock_quantity === 0
-              ? "text-red-400 font-medium"
+              ? "text-red-400 font-bold bg-red-500/10 px-2 py-0.5 rounded-md"
               : row.stock_quantity <= row.low_stock_threshold
-                ? "text-amber-400 font-medium"
-                : "text-emerald-400"
+                ? "text-amber-400 font-bold bg-amber-400/10 px-2 py-0.5 rounded-md"
+                : "text-emerald-400 font-semibold font-mono"
           }
         >
           {row.stock_quantity}
@@ -48,10 +52,10 @@ export function InventoryTable({ products, showAdjust = true }: InventoryTablePr
     },
     {
       key: "status",
-      header: "Availability",
+      header: "حالة التوفر",
       render: (row) => (
         <Badge variant={row.is_available ? "inStock" : "outOfStock"}>
-          {row.is_available ? "Available" : "Unavailable"}
+          {row.is_available ? "متوفر للطلب" : "غير متوفر"}
         </Badge>
       ),
     },
@@ -60,10 +64,10 @@ export function InventoryTable({ products, showAdjust = true }: InventoryTablePr
   if (showAdjust) {
     columns.push({
       key: "adjust",
-      header: "Adjust",
+      header: "تعديل سريع للمخزون",
       render: (row) => (
         <form
-          className="flex items-end gap-2"
+          className="flex items-center gap-1.5 py-1"
           onSubmit={(e) => {
             e.preventDefault();
             const form = e.currentTarget;
@@ -75,19 +79,19 @@ export function InventoryTable({ products, showAdjust = true }: InventoryTablePr
           }}
         >
           <input type="hidden" name="productId" value={row.id} />
-          <Input name="quantity" type="number" placeholder="±qty" className="w-20 h-8" />
+          <Input name="quantity" type="number" placeholder="±العدد" className="w-20 h-8 text-xs font-mono text-center" />
           <Select
             name="reason"
             options={[
-              { value: "restock", label: "Restock" },
-              { value: "adjustment", label: "Adjust" },
-              { value: "damage", label: "Damage" },
-              { value: "return", label: "Return" },
+              { value: "restock", label: "توريد (+)" },
+              { value: "adjustment", label: "جرد يدوي" },
+              { value: "damage", label: "تالف (-)" },
+              { value: "return", label: "مرتجع (+)" },
             ]}
-            className="w-28 h-8 text-xs"
+            className="w-24 h-8 text-[11px]"
           />
-          <Button type="submit" size="sm" loading={isPending}>
-            Apply
+          <Button type="submit" size="sm" loading={isPending} className="h-8 px-2.5 text-xs">
+            تطبيق
           </Button>
         </form>
       ),
@@ -99,7 +103,7 @@ export function InventoryTable({ products, showAdjust = true }: InventoryTablePr
       data={products}
       columns={columns}
       searchKeys={["name", "sku"]}
-      searchPlaceholder="Search inventory..."
+      searchPlaceholder="ابحث في المخزون بالاسم أو الكود..."
     />
   );
 }

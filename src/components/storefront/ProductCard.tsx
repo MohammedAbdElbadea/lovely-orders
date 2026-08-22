@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag, Star, Check } from "lucide-react";
+import { motion } from "framer-motion";
+import { Heart, ShoppingBag, Star, Check, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
-import { useToast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import { getPrimaryImage } from "@/lib/product-utils";
 import { formatPrice, cn } from "@/lib/utils";
 import type { Product } from "@/types/domain.types";
@@ -23,7 +24,6 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
   const { toggle, has } = useWishlistStore();
-  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [added, setAdded] = useState(false);
 
@@ -56,11 +56,12 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
 
-    toast({
-      title: "تمت إضافة المنتج بنجاح! ✨",
-      description: `${product.name} أصبح في سلة تسوقك.`,
-      variant: "success",
-      duration: 3000,
+    toast.success("تمت إضافة المنتج إلى السلة ✨", {
+      description: `${product.name} - ${formatPrice(product.price)}`,
+      action: {
+        label: "عرض السلة 🛍️",
+        onClick: () => openCart(),
+      },
     });
   };
 
@@ -75,17 +76,23 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
       imageUrl,
     });
 
-    toast({
-      title: inWishlist ? "تم الإزالة من المفضلة" : "تمت الإضافة للمفضلة ❤️",
-      variant: "info",
-      duration: 2000,
-    });
+    if (!inWishlist) {
+      toast.success("تمت الإضافة للمفضلة ❤️", {
+        description: product.name,
+      });
+    } else {
+      toast.info("تم الحذف من المفضلة", {
+        description: product.name,
+      });
+    }
   };
 
   return (
-    <article
+    <motion.article
+      whileHover={{ y: -6 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-luxury border border-luxury-border/40 bg-white shadow-xs transition-all duration-300 hover:border-gold/60 hover:shadow-xl hover-lift animate-fade-up",
+        "group relative flex flex-col overflow-hidden rounded-2xl border border-luxury-border/40 bg-white shadow-xs transition-all duration-300 hover:border-gold/60 hover:shadow-2xl",
         className
       )}
     >
@@ -97,7 +104,7 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
               alt={primaryImage?.alt_text ?? product.name}
               fill
               priority={priority}
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (
@@ -108,13 +115,13 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
 
           {/* Badges container */}
           <div className="absolute left-3 top-3 flex flex-col gap-1.5 z-10">
-            {product.is_new_arrival && <Badge variant="new">جديد</Badge>}
+            {product.is_new_arrival && <Badge variant="new">جديد ✨</Badge>}
             {product.is_on_sale && hasDiscount && (
               <Badge variant="sale">
                 خصم {Math.round(((product.compare_at_price! - product.price) / product.compare_at_price!) * 100)}%
               </Badge>
             )}
-            {product.is_featured && <Badge variant="featured">مميز</Badge>}
+            {product.is_featured && <Badge variant="featured">مميز 💎</Badge>}
             {!product.is_available && (
               <Badge variant="outOfStock">نفد بالكامل</Badge>
             )}
@@ -125,7 +132,7 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
             type="button"
             onClick={handleWishlist}
             className={cn(
-              "absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-md transition-all duration-300 hover:scale-110 shadow-xs",
+              "absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 shadow-xs",
               inWishlist ? "text-rose-ruby bg-rose-soft" : "text-luxury-muted hover:text-rose-ruby"
             )}
             aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
@@ -156,11 +163,11 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
           )}
 
           <div className="mt-auto flex items-baseline gap-2 pt-3">
-            <span className="font-display text-lg font-bold text-gold">
+            <span className="font-display text-lg font-bold text-gold font-mono">
               {formatPrice(product.price)}
             </span>
             {hasDiscount && (
-              <span className="text-sm text-luxury-muted line-through">
+              <span className="text-xs text-luxury-muted line-through font-mono">
                 {formatPrice(product.compare_at_price!)}
               </span>
             )}
@@ -172,7 +179,7 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
         <Button
           variant={added ? "secondary" : "primary"}
           className={cn(
-            "w-full font-semibold transition-all duration-300 shadow-xs",
+            "w-full font-semibold transition-all duration-300 shadow-xs h-10 text-xs sm:text-sm",
             added && "bg-emerald-600 text-white hover:bg-emerald-700"
           )}
           onClick={handleAddToCart}
@@ -180,15 +187,15 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
         >
           {added ? (
             <span className="inline-flex items-center gap-1.5 animate-badge-pop">
-              <Check className="h-4 w-4" /> تمت الإضافة للسلة
+              <Check className="h-4 w-4" /> تمت الإضافة بنجاح
             </span>
           ) : product.is_available ? (
-            "أضف للسلة"
+            "أضف للسلة 🛍️"
           ) : (
             "نفد من المخزون"
           )}
         </Button>
       </div>
-    </article>
+    </motion.article>
   );
 }

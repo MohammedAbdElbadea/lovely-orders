@@ -21,21 +21,25 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "rounded-luxury border border-luxury-border/30 bg-premium-black p-6 transition-colors hover:border-gold/30",
+        "rounded-luxury border border-luxury-border/30 bg-premium-black p-4 sm:p-5 transition-all hover:border-gold/40 shadow-xs",
         className
       )}
     >
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <p className="text-xs uppercase tracking-wider text-luxury-muted">{title}</p>
-          <p className="font-display text-3xl text-luxury-white">{value}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1 space-y-1">
+          <p className="text-[11px] sm:text-xs uppercase tracking-wider text-luxury-muted font-medium truncate">
+            {title}
+          </p>
+          <p className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-luxury-white break-words">
+            {value}
+          </p>
           {description && (
-            <p className="text-xs text-luxury-muted">{description}</p>
+            <p className="text-[11px] sm:text-xs text-luxury-muted truncate">{description}</p>
           )}
           {trend && (
             <p
               className={cn(
-                "text-xs font-medium",
+                "text-xs font-semibold pt-0.5",
                 trend.positive ? "text-emerald-400" : "text-red-400"
               )}
             >
@@ -44,8 +48,8 @@ export function StatCard({
           )}
         </div>
         {Icon && (
-          <div className="rounded-luxury bg-gold/10 p-2.5">
-            <Icon className="h-5 w-5 text-gold" />
+          <div className="rounded-luxury bg-gold/10 p-2 sm:p-2.5 shrink-0">
+            <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-gold" />
           </div>
         )}
       </div>

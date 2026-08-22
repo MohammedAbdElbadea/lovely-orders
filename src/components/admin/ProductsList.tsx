@@ -21,33 +21,41 @@ export function ProductsList({ products }: ProductsListProps) {
   const columns: Column<Product>[] = [
     {
       key: "name",
-      header: "Product",
+      header: "اسم المنتج (Product)",
       render: (row) => (
         <Link
           href={`/admin/products/${row.id}/edit`}
-          className="font-medium text-luxury-white hover:text-gold"
+          className="font-semibold text-luxury-white hover:text-gold block py-1"
         >
           {row.name}
         </Link>
       ),
     },
-    { key: "sku", header: "SKU" },
+    {
+      key: "sku",
+      header: "الكود (SKU)",
+      render: (row) => <span className="font-mono text-luxury-muted">{row.sku}</span>,
+    },
     {
       key: "price",
-      header: "Price",
-      render: (row) => formatPrice(Number(row.price), "EGP", "en-EG"),
+      header: "السعر",
+      render: (row) => (
+        <span className="font-bold font-mono text-gold">
+          {formatPrice(Number(row.price), "EGP", "en-EG")}
+        </span>
+      ),
     },
     {
       key: "stock_quantity",
-      header: "Stock",
+      header: "المخزون",
       render: (row) => (
         <span
           className={
             row.stock_quantity === 0
-              ? "text-red-400"
+              ? "text-red-400 font-bold bg-red-500/10 px-2 py-0.5 rounded-md"
               : row.stock_quantity <= row.low_stock_threshold
-                ? "text-amber-400"
-                : ""
+                ? "text-amber-400 font-bold bg-amber-400/10 px-2 py-0.5 rounded-md"
+                : "text-emerald-400 font-semibold font-mono"
           }
         >
           {row.stock_quantity}
@@ -56,17 +64,17 @@ export function ProductsList({ products }: ProductsListProps) {
     },
     {
       key: "status",
-      header: "Status",
+      header: "الحالة",
       render: (row) => (
         <Badge variant={row.status === "published" ? "inStock" : "outline"}>
-          {row.status}
+          {row.status === "published" ? "نشط (معروض)" : "مسودة"}
         </Badge>
       ),
     },
   ];
 
   const handleBulkDelete = () => {
-    if (!selectedIds.length || !confirm("Delete selected products?")) return;
+    if (!selectedIds.length || !confirm("هل أنت متأكد من حذف المنتجات المحددة؟")) return;
     startTransition(async () => {
       await deleteProductsBulk(selectedIds);
       setSelectedIds([]);
@@ -74,20 +82,21 @@ export function ProductsList({ products }: ProductsListProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4 max-w-full">
       {selectedIds.length > 0 && (
-        <div className="flex items-center gap-3 rounded-luxury border border-luxury-border/30 bg-surface-elevated px-4 py-2">
-          <span className="text-sm text-luxury-muted">
-            {selectedIds.length} selected
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-luxury border border-luxury-border/30 bg-surface-elevated p-3 sm:px-4 sm:py-2.5 shadow-md animate-fade-in">
+          <span className="text-xs sm:text-sm text-luxury-muted">
+            تم تحديد <strong className="text-gold font-mono">{selectedIds.length}</strong> منتج
           </span>
           <Button
             variant="destructive"
             size="sm"
             loading={isPending}
             onClick={handleBulkDelete}
+            className="h-9 px-3 text-xs"
           >
             <Trash2 className="h-4 w-4" />
-            Delete
+            حذف المحدد
           </Button>
         </div>
       )}
@@ -96,7 +105,7 @@ export function ProductsList({ products }: ProductsListProps) {
         data={products}
         columns={columns}
         searchKeys={["name", "sku"]}
-        searchPlaceholder="Search products..."
+        searchPlaceholder="ابحث باسم المنتج أو كود SKU..."
         selectable
         selectedIds={selectedIds}
         onSelectionChange={setSelectedIds}
